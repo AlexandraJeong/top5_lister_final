@@ -68,7 +68,12 @@ function AuthContextProvider(props) {
             });
         }
     }
-
+    auth.toLoginMenu = function(){
+        history.push("/login");
+    }
+    auth.toRegisterMenu = function(){
+        history.push("/register");
+    }
     auth.registerUser = async function(firstName, lastName, email, password, passwordVerify) {
         const response = await api.registerUser(firstName, lastName, email, password, passwordVerify);      
         if (response.status === 200) {

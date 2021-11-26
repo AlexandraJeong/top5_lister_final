@@ -34,26 +34,6 @@ export default function AppBanner() {
     }
 
     const menuId = 'primary-search-account-menu';
-    const loggedOutMenu = (
-        <Menu
-            anchorEl={anchorEl}
-            anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-            id={menuId}
-            keepMounted
-            transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-            open={isMenuOpen}
-            onClose={handleMenuClose}
-        >
-            <MenuItem onClick={handleMenuClose}><Link to='/login/'>Login</Link></MenuItem>
-            <MenuItem onClick={handleMenuClose}><Link to='/register/'>Create New Account</Link></MenuItem>
-        </Menu>
-    );
     const loggedInMenu = 
         <Menu
             anchorEl={anchorEl}
@@ -74,7 +54,7 @@ export default function AppBanner() {
         </Menu>        
 
     let editToolbar = "";
-    let menu = loggedOutMenu;
+    let menu = null; //loggedOutMenu;
     if (auth.loggedIn) {
         menu = loggedInMenu;
         if (store.currentList) {
@@ -93,7 +73,7 @@ export default function AppBanner() {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
+            <AppBar id = "top5-banner" position="static">
                 <Toolbar>
                     <Typography                        
                         variant="h4"
@@ -101,7 +81,7 @@ export default function AppBanner() {
                         component="div"
                         sx={{ display: { xs: 'none', sm: 'block' } }}                        
                     >
-                        <Link style={{ textDecoration: 'none', color: 'white' }} to='/'>T<sup>5</sup>L</Link>
+                        <Link style={{ textDecoration: 'none', color: 'yellow' }} to='/'>T<sup>5</sup>L</Link>
                     </Typography>
                     <Box sx={{ flexGrow: 1 }}>{editToolbar}</Box>
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
