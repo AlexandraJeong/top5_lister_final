@@ -1,16 +1,19 @@
-import { loginUser } from "../auth/auth-request-api";
+
 import { useContext, useState } from 'react';
 import AuthContext from '../auth';
 
 export default function SplashScreen() {
     const { auth } = useContext(AuthContext);
 
-    const loginMenu = () => {
+    const handleLogin = () => {
         auth.toLoginMenu();
     }
 
-    const registerMenu = () => {
+    const handleRegister = () => {
         auth.toRegisterMenu();
+    }
+
+    const handleGuest = () => {
     }
     return (
         <div id="splash-screen">
@@ -21,17 +24,17 @@ export default function SplashScreen() {
             <button
                 id="create-account-button"
                 className="splash-screen-button"
-                onClick = {registerMenu}
+                onClick = {handleRegister}
                 >Create<br/>Account</button>
             <button
                 id="login-button"
                 className="splash-screen-button"
-                onClick = {loginMenu}
+                onClick = {handleLogin}
                 >Log In</button>
             <button
                 id="guest-button"
                 className="splash-screen-button"
-                //onClick = {loginAsGuest}
+                onClick = {handleGuest}
                 >Continue<br/>as Guest</button>
         </div>
         

@@ -2,10 +2,13 @@ import { useContext, useState } from 'react'
 import { GlobalStoreContext } from '../store'
 import Box from '@mui/material/Box';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import TextField from '@mui/material/TextField';
+import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined';
+import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 /*
     This is a card in our list of top 5 lists. It lets select
@@ -16,7 +19,7 @@ import TextField from '@mui/material/TextField';
 */
 function ListCard(props) {
     const { store } = useContext(GlobalStoreContext);
-    const [editActive, setEditActive] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
     const [text, setText] = useState("");
     const { idNamePair, selected } = props;
 
@@ -34,19 +37,6 @@ function ListCard(props) {
         }
     }
 
-    function handleToggleEdit(event) {
-        event.stopPropagation();
-        toggleEdit();
-    }
-
-    function toggleEdit() {
-        let newActive = !editActive;
-        if (newActive) {
-            store.setIsListNameEditActive();
-        }
-        setEditActive(newActive);
-    }
-
     async function handleDeleteList(event, id) {
         event.stopPropagation();
         let _id = event.target.id;
@@ -54,56 +44,63 @@ function ListCard(props) {
         store.markListForDeletion(id);
     }
 
-    function handleKeyPress(event) {
-        if (event.code === "Enter") {
-            let id = event.target.id.substring("list-".length);
-            store.changeListName(id, text);
-            toggleEdit();
-        }
-    }
-    function handleUpdateText(event) {
-        setText(event.target.value);
-    }
-
-    let selectClass = "unselected-list-card";
-    if (selected) {
-        selectClass = "selected-list-card";
-    }
-    let cardStatus = false;
-    if (store.isListNameEditActive) {
-        cardStatus = true;
-    }
     let cardElement =
         <ListItem
             id={idNamePair._id}
+            className={'list-card'}
             key={idNamePair._id}
             sx={{ marginTop: '15px', display: 'flex', p: 1 }}
-            style={{ width: '100%' }}
-            button
-            onClick={(event) => {
-                handleLoadList(event, idNamePair._id)
-            }
-            }
-            style={{
-                fontSize: '48pt'
-            }}
+            style={{ width: '100%', fontSize: '48pt' }}
         >
-                <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box>
-                <Box sx={{ p: 1 }}>
-                    <IconButton onClick={handleToggleEdit} aria-label='edit'>
-                        <EditIcon style={{fontSize:'48pt'}} />
-                    </IconButton>
+            <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box>
+            <Box sx={{ p: 1 }}>
+                <IconButton aria-label='like'>
+                    <ThumbUpOutlinedIcon style={{ fontSize: '20pt' }} />
+                </IconButton>
+                <Typography
+                    noWrap
+                    component="div"
+                    display="inline"
+                    sx={{ fontSize: '15pt'}}
+                >
+                    Number
+                </Typography>
+                <Typography                        
+                        noWrap
+                        component="div"
+                        sx={{ fontSize: 10, display: { xs: 'none', sm: 'block' } }}                        
+                    >
+                        Views: 
+                    </Typography>
+            </Box>
+            <Box sx={{ p: 1 }}>
+                <IconButton aria-label='dislike'>
+                    <ThumbDownOutlinedIcon style={{ fontSize: '20pt' }} />
+                </IconButton>
+                <Typography
+                    noWrap
+                    component="div"
+                    display="inline"
+                    sx={{ fontSize: '15pt'}}
+                >
+                    Number
+                </Typography>
+            </Box>
+            <Box sx={{ p: 1 }}>
+                <IconButton onClick={(event) => {
+                    handleDeleteList(event, idNamePair._id)
+                }} aria-label='delete'>
+                    <DeleteIcon style={{ fontSize: '20pt' }} />
+                </IconButton>
+                <Box>
+                <IconButton aria-label='expand'>
+                    <ExpandMoreIcon style={{ fontSize: '20pt' }} />
+                </IconButton>
                 </Box>
-                <Box sx={{ p: 1 }}>
-                    <IconButton onClick={(event) => {
-                        handleDeleteList(event, idNamePair._id)
-                    }} aria-label='delete'>
-                        <DeleteIcon style={{fontSize:'48pt'}} />
-                    </IconButton>
-                </Box>
+            </Box>
         </ListItem>
 
-    if (editActive) {
+    if (isOpen) {
         cardElement =
             <TextField
                 margin="normal"
@@ -114,11 +111,9 @@ function ListCard(props) {
                 name="name"
                 autoComplete="Top 5 List Name"
                 className='list-card'
-                onKeyPress={handleKeyPress}
-                onChange={handleUpdateText}
                 defaultValue={idNamePair.name}
-                inputProps={{style: {fontSize: 48}}}
-                InputLabelProps={{style: {fontSize: 24}}}
+                inputProps={{ style: { fontSize: 48 } }}
+                InputLabelProps={{ style: { fontSize: 24 } }}
                 autoFocus
             />
     }
