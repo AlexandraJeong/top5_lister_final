@@ -75,22 +75,30 @@ export default function Toolbar(){
         <Box sx={{ flexGrow: 1 }}>
             <AppBar id = "top5-toolbar" position="static">
             <Box sx={{ p: 1 }}>
-                <IconButton aria-label='your-lists' onClick={handleViewYourLists}>
+                <IconButton aria-label='your-lists' 
+                disabled={store.filterMode==="your_lists"}
+                onClick={handleViewYourLists}>
                         <HomeOutlinedIcon 
                         className = {store.filterMode === "your_lists"? "filter-button-selected" : "filter-button"}
                         style={{ fontSize: '40pt' }} />
                 </IconButton>
-                <IconButton aria-label='all-lists' onClick={handleViewAllLists}>
+                <IconButton aria-label='all-lists' 
+                disabled={store.filterMode==="all_lists"}
+                onClick={handleViewAllLists}>
                     <GroupsOutlinedIcon 
                     className = {store.filterMode === "all_lists"? "filter-button-selected" : "filter-button"}
                     style={{ fontSize: '40pt' }} />
                 </IconButton>
-                <IconButton aria-label='user-lists' onClick={handleViewUserLists}>
+                <IconButton aria-label='user-lists' 
+                disabled={store.filterMode==="user_lists"}
+                onClick={handleViewUserLists}>
                     <PersonOutlineOutlinedIcon 
                     className = {store.filterMode === "user_lists"? "filter-button-selected" : "filter-button"}
                     style={{ fontSize: '40pt' }} />
                 </IconButton>
-                <IconButton aria-label='community-lists' onClick={handleViewCommunityLists}>
+                <IconButton aria-label='community-lists' 
+                disabled={store.filterMode==="community_lists"}
+                onClick={handleViewCommunityLists}>
                     <FunctionsIcon 
                     className = {store.filterMode === "community_lists"? "filter-button-selected" : "filter-button"}
                     style={{ fontSize: '40pt' }} />

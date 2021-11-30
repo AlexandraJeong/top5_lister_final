@@ -45,7 +45,7 @@ function GlobalStoreContextProvider(props) {
         listNameActive: false,
         itemActive: false,
         listMarkedForDeletion: null,
-        filterMode: ""
+        filterMode: "your_lists"
     });
     const history = useHistory();
 
@@ -170,13 +170,13 @@ function GlobalStoreContextProvider(props) {
             }
             case GlobalStoreActionType.CHANGE_FILTER_MODE: {
                 return setStore({
-                    idNamePairs: store.idNamePairs,
+                    idNamePairs: payload.pairs,
                     currentList: store.currentList,
                     newListCounter: store.newListCounter,
                     isListNameEditActive: true,
                     isItemEditActive: false,
                     listMarkedForDeletion: null,
-                    filterMode: payload
+                    filterMode: payload.filterMode
                 });
             }
             default:
@@ -238,16 +238,37 @@ function GlobalStoreContextProvider(props) {
 
     //FOR VIEWING LISTS
     store.viewYourLists = async function (){
-        storeReducer({
-            type: GlobalStoreActionType.CHANGE_FILTER_MODE,
-            payload: "your_lists"
-        });
+        async function getYourListPairs() {
+            let response = await api.getTop5ListPairs();
+            if (response.status === 200) {
+                let pairsArray = response.data.idNamePairs;
+                storeReducer({
+                    type: GlobalStoreActionType.CHANGE_FILTER_MODE,
+                    payload: {
+                        pairs: pairsArray,
+                        filterMode: "your_lists"
+                    }
+                });
+            }
+        }
+        getYourListPairs();
     }
     store.viewAllLists = async function (){
-        storeReducer({
-            type: GlobalStoreActionType.CHANGE_FILTER_MODE,
-            payload: "all_lists"
-        });
+        async function getAllListPairs() {
+            let response = await api.getPublishedTop5ListPairs();
+            if (response.status === 200) {
+                let pairsArray = response.data.idNamePairs;
+                console.log(pairsArray);
+                storeReducer({
+                    type: GlobalStoreActionType.CHANGE_FILTER_MODE,
+                    payload: {
+                        pairs: pairsArray,
+                        filterMode: "all_lists"
+                    }
+                });
+            }
+        }
+        getAllListPairs();
     }
     store.viewUserLists = async function (){
         storeReducer({

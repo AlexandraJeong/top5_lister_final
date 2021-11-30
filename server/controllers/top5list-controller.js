@@ -101,6 +101,8 @@ getTop5ListById = async (req, res) => {
     }).catch(err => console.log(err))
 }
 getTop5ListPairs = async (req, res) => {
+    console.log("body");
+    console.log(req.body);
     console.log("getTop5ListPairs");
     await User.findOne({ _id: req.userId }, (err, user) => {
         console.log("find user with id " + req.userId);
@@ -142,6 +144,39 @@ getTop5ListPairs = async (req, res) => {
             }).catch(err => console.log(err))
         }
         asyncFindList(user.email);
+    }).catch(err => console.log(err))
+}
+getPublishedTop5ListPairs = async (req, res) => {
+    await Top5List.find({}, (err, top5Lists) => {
+        if (err) {
+            return res.status(400).json({ success: false, error: err })
+        }
+        if (!top5Lists.length) {
+            return res
+                .status(404)
+                .json({ success: false, error: 'Top 5 Lists not found' })
+        }
+        else {
+            // PUT ALL THE LISTS INTO ID, NAME PAIRS
+            let pairs = [];
+            for (let key in top5Lists) {
+                let list = top5Lists[key];
+                let pair = {
+                    _id: list._id,
+                    name: list.name,
+                    items: list.items,
+                            ownerEmail: list.ownerEmail,
+                            likesList: list.likesList,
+                            dislikesList: list.dislikesList,
+                            views: list.views,
+                            isPublished: list.isPublished,
+                            comments: list.comments,
+                            isCommunity: list.isCommunity
+                };
+                pairs.push(pair);
+            }
+            return res.status(200).json({ success: true, idNamePairs: pairs })
+        }
     }).catch(err => console.log(err))
 }
 getTop5Lists = async (req, res) => {
@@ -228,5 +263,6 @@ module.exports = {
     getTop5ListById,
     getTop5ListPairs,
     getTop5Lists,
-    updateTop5List
+    updateTop5List,
+    getPublishedTop5ListPairs
 }

@@ -13,6 +13,7 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import Grid from '@mui/material/Grid';
 
 /*
     This is a card in our list of top 5 lists. It lets select
@@ -26,7 +27,7 @@ function ListCard(props) {
     const { store } = useContext(GlobalStoreContext);
     const [isOpen, setIsOpen] = useState(false);
     const [text, setText] = useState("");
-    const {idNamePair, selected } = props;
+    const { idNamePair, selected } = props;
 
     function handleLoadList(event, id) {
         console.log("handleLoadList for " + id);
@@ -60,19 +61,19 @@ function ListCard(props) {
     }
 
     //CHECKING LIKES/DISLIKES
-    function doesUserLikeList(){
+    function doesUserLikeList() {
         return idNamePair.likesList.includes(auth.user.email);
     }
-    function doesUserDislikeList(){
+    function doesUserDislikeList() {
         return idNamePair.dislikesList.includes(auth.user.email);
     }
 
     //LIKE/DISLIKE HANDLERS
-    function likeListHandler(event){
+    function likeListHandler(event) {
         event.stopPropagation();
         store.likeList(idNamePair._id);
     }
-    function dislikeListHandler(event){
+    function dislikeListHandler(event) {
         event.stopPropagation();
         store.dislikeList(idNamePair._id);
     }
@@ -83,62 +84,83 @@ function ListCard(props) {
             className={'list-card'}
             key={idNamePair._id}
             sx={{ marginTop: '15px', display: 'flex', p: 1 }}
-            style={{ width: '100%', fontSize: '48pt' }}
+            style={{ width: '100%'}}
         >
-            <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box>
-            <Box sx={{ p: 1 }}>
-                <IconButton aria-label='like'
-                disabled = {doesUserLikeList()}
-                onClick = {likeListHandler}>
-                    {doesUserLikeList()?<ThumbUpIcon style={{ fontSize: '20pt' }}/>:<ThumbUpOutlinedIcon style={{ fontSize: '20pt' }} />}
-                </IconButton>
+            <Grid container spacing={2}>
+                <Grid item xs={9}>
                 <Typography
-                    noWrap
-                    component="div"
-                    display="inline"
-                    sx={{ fontSize: '15pt'}}
-                >
-                    {idNamePair.likesList.length}
-                </Typography>
-                <Typography                        
-                        noWrap
-                        component="div"
-                        sx={{ fontSize: 10, display: { xs: 'none', sm: 'block' } }}                        
-                    >
-                        Views: {idNamePair.views}
-                    </Typography>
-            </Box>
-            <Box sx={{ p: 1 }}>
-                <IconButton aria-label='dislike'
-                disabled = {doesUserDislikeList()}
-                onClick = {dislikeListHandler}>
-                    {doesUserDislikeList()?<ThumbDownIcon style={{ fontSize: '20pt' }} />:<ThumbDownOutlinedIcon style={{ fontSize: '20pt' }} />}
-                </IconButton>
-                <Typography
-                    noWrap
-                    component="div"
-                    display="inline"
-                    sx={{ fontSize: '15pt'}}
-                >
-                    {idNamePair.dislikesList.length}
-                </Typography>
-            </Box>
-            <Box sx={{ p: 1 }}>
-                <IconButton 
-                disabled={store.filterMode != "your_lists"}
-                onClick={(event) => {
-                    handleDeleteList(event, idNamePair._id)
-                }} aria-label='delete'>
-                    <DeleteIcon 
-                    className = {store.filterMode === "your_lists"? "delete":"delete-disabled"}
-                    style={{ fontSize: '20pt' }} />
-                </IconButton>
-                <Box>
-                <IconButton aria-label='expand' onClick={handleExpandList}>
-                    <ExpandMoreIcon style={{ fontSize: '20pt' }} />
-                </IconButton>
+                            style ={{marginLeft: '15px'}}
+                            noWrap
+                            component="div"
+                            display="inline"
+                            sx={{ fontSize: '20pt' }}
+                        >
+                            {idNamePair.name}
+                        </Typography>
+                </Grid>
+                <Grid item xs={1}>
+                        <IconButton aria-label='like'
+                            disabled={doesUserLikeList()}
+                            onClick={likeListHandler}>
+                            {doesUserLikeList() ? <ThumbUpIcon style={{ fontSize: '20pt' }} /> : <ThumbUpOutlinedIcon style={{ fontSize: '20pt' }} />}
+                        </IconButton>
+                        <Typography
+                            noWrap
+                            component="div"
+                            display="inline"
+                            sx={{ fontSize: '15pt' }}
+                        >
+                            {idNamePair.likesList.length}
+                        </Typography>
+                </Grid>
+                <Grid item xs={1}>
+                        <IconButton aria-label='dislike'
+                            disabled={doesUserDislikeList()}
+                            onClick={dislikeListHandler}>
+                            {doesUserDislikeList() ? <ThumbDownIcon style={{ fontSize: '20pt' }} /> : <ThumbDownOutlinedIcon style={{ fontSize: '20pt' }} />}
+                        </IconButton>
+                        <Typography
+                            noWrap
+                            component="div"
+                            display="inline"
+                            sx={{ fontSize: '15pt' }}
+                        >
+                            {idNamePair.dislikesList.length}
+                        </Typography>
+                </Grid>
+                <Grid item xs={1}>
+                        <IconButton
+                            disabled={store.filterMode != "your_lists"}
+                            onClick={(event) => {
+                                handleDeleteList(event, idNamePair._id)
+                            }} aria-label='delete'>
+                            <DeleteIcon
+                                className={store.filterMode === "your_lists" ? "delete" : "delete-disabled"}
+                                style={{ fontSize: '20pt' }} />
+                        </IconButton>
+                </Grid>
+                <Grid item xs={9}>
+                </Grid>
+                <Grid item xs={1}>
+                        <Typography
+                            noWrap
+                            component="div"
+                            sx={{ fontSize: 10, display: { xs: 'none', sm: 'block' } }}
+                        >
+                            Views: {idNamePair.views}
+                        </Typography>
+                </Grid>
+                <Grid item xs={.2}></Grid>
+                <Grid item xs={1}></Grid>
+                <Box >
+                    <IconButton aria-label='expand' onClick={handleExpandList}>
+                        <ExpandMoreIcon style={{ fontSize: '20pt' }} />
+                    </IconButton>
                 </Box>
-            </Box>
+            </Grid>
+
+
+
         </ListItem>
 
     if (isOpen) {
@@ -159,16 +181,16 @@ function ListCard(props) {
                     noWrap
                     component="div"
                     display="inline"
-                    sx={{ fontSize: '15pt'}}
+                    sx={{ fontSize: '15pt' }}
                 >
                     Number
                 </Typography>
-                <Typography                        
-                        noWrap
-                        component="div"
-                        sx={{ fontSize: 10, display: { xs: 'none', sm: 'block' } }}                        
-                    >
-                        Views: 
+                <Typography
+                    noWrap
+                    component="div"
+                    sx={{ fontSize: 10, display: { xs: 'none', sm: 'block' } }}
+                >
+                    Views:
                 </Typography>
             </Box>
             <Box sx={{ p: 1 }}>
@@ -179,7 +201,7 @@ function ListCard(props) {
                     noWrap
                     component="div"
                     display="inline"
-                    sx={{ fontSize: '15pt'}}
+                    sx={{ fontSize: '15pt' }}
                 >
                     Number
                 </Typography>
@@ -191,17 +213,17 @@ function ListCard(props) {
                     <DeleteIcon style={{ fontSize: '20pt' }} />
                 </IconButton>
                 <Box>
-                <IconButton aria-label='expand' onClick={handleUnexpandList}>
-                    <ExpandLessIcon style={{ fontSize: '20pt' }} />
-                </IconButton>
+                    <IconButton aria-label='expand' onClick={handleUnexpandList}>
+                        <ExpandLessIcon style={{ fontSize: '20pt' }} />
+                    </IconButton>
                 </Box>
             </Box>
 
-            <List sx={{ width: '90%', left: '5%', bgcolor: '#2c2f70'}}>
+            <List sx={{ width: '90%', left: '5%', bgcolor: '#2c2f70' }}>
                 {
                     idNamePair.items.map((item, index) => (
                         <ListItem>
-                        {(index+1)}. {item}
+                            {(index + 1)}. {item}
                         </ListItem>
                     ))
                 }
