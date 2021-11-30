@@ -64,8 +64,8 @@ deleteTop5List = async (req, res) => {
                 }
                 else {
                     console.log("incorrect user!");
-                    return res.status(400).json({ 
-                        errorMessage: "authentication error" 
+                    return res.status(400).json({
+                        errorMessage: "authentication error"
                     });
                 }
             });
@@ -125,7 +125,15 @@ getTop5ListPairs = async (req, res) => {
                         let list = top5Lists[key];
                         let pair = {
                             _id: list._id,
-                            name: list.name
+                            name: list.name,
+                            items: list.items,
+                            ownerEmail: list.ownerEmail,
+                            likesList: list.likesList,
+                            dislikesList: list.dislikesList,
+                            views: list.views,
+                            isPublished: list.isPublished,
+                            comments: list.comments,
+                            isCommunity: list.isCommunity
                         };
                         pairs.push(pair);
                     }

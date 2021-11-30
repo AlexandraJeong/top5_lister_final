@@ -1,9 +1,11 @@
 import React, { useContext, useEffect } from 'react'
 import { GlobalStoreContext } from '../store'
 import ListCard from './ListCard.js'
+import Toolbar from './Toolbar.js'
 import MUIDeleteModal from './MUIDeleteModal'
 
 import List from '@mui/material/List';
+import { paginationClasses } from '@mui/material';
 /*
     This React component lists all the top5 lists in the UI.
     
@@ -33,7 +35,7 @@ const HomeScreen = () => {
     return (
         <div id="top5-list-selector">
             <div id="list-selector-heading">
-            
+            <Toolbar className = {store.currentList?"disabled-toolbar":"toolbar"}/>
             </div>
             <div id="list-selector-list">
                 {

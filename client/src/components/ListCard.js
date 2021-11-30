@@ -4,11 +4,12 @@ import Box from '@mui/material/Box';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
-import TextField from '@mui/material/TextField';
+import List from '@mui/material/List';
 import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined';
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 /*
     This is a card in our list of top 5 lists. It lets select
@@ -21,8 +22,10 @@ function ListCard(props) {
     const { store } = useContext(GlobalStoreContext);
     const [isOpen, setIsOpen] = useState(false);
     const [text, setText] = useState("");
-    const { idNamePair, selected } = props;
+    const {idNamePair, selected } = props;
 
+    console.log("Views");
+    console.log(idNamePair.views);
     function handleLoadList(event, id) {
         console.log("handleLoadList for " + id);
         if (!event.target.disabled) {
@@ -44,8 +47,80 @@ function ListCard(props) {
         store.markListForDeletion(id);
     }
 
+    function handleExpandList(event) {
+        event.stopPropagation();
+        setIsOpen(true);
+    }
+
+    function handleUnexpandList(event) {
+        event.stopPropagation();
+        setIsOpen(false);
+    }
+
+    
     let cardElement =
         <ListItem
+            id={idNamePair._id}
+            className={'list-card'}
+            key={idNamePair._id}
+            sx={{ marginTop: '15px', display: 'flex', p: 1 }}
+            style={{ width: '100%', fontSize: '48pt' }}
+        >
+            <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box>
+            <Box sx={{ p: 1 }}>
+                <IconButton aria-label='like'>
+                    <ThumbUpOutlinedIcon style={{ fontSize: '20pt' }} />
+                </IconButton>
+                <Typography
+                    noWrap
+                    component="div"
+                    display="inline"
+                    sx={{ fontSize: '15pt'}}
+                >
+                    {idNamePair.likesList.length}
+                </Typography>
+                <Typography                        
+                        noWrap
+                        component="div"
+                        sx={{ fontSize: 10, display: { xs: 'none', sm: 'block' } }}                        
+                    >
+                        Views: {idNamePair.views}
+                    </Typography>
+            </Box>
+            <Box sx={{ p: 1 }}>
+                <IconButton aria-label='dislike'>
+                    <ThumbDownOutlinedIcon style={{ fontSize: '20pt' }} />
+                </IconButton>
+                <Typography
+                    noWrap
+                    component="div"
+                    display="inline"
+                    sx={{ fontSize: '15pt'}}
+                >
+                    {idNamePair.dislikesList.length}
+                </Typography>
+            </Box>
+            <Box sx={{ p: 1 }}>
+                <IconButton 
+                disabled={store.filterMode != "your_lists"}
+                onClick={(event) => {
+                    handleDeleteList(event, idNamePair._id)
+                }} aria-label='delete'>
+                    <DeleteIcon 
+                    className = {store.filterMode === "your_lists"? "delete":"delete-disabled"}
+                    style={{ fontSize: '20pt' }} />
+                </IconButton>
+                <Box>
+                <IconButton aria-label='expand' onClick={handleExpandList}>
+                    <ExpandMoreIcon style={{ fontSize: '20pt' }} />
+                </IconButton>
+                </Box>
+            </Box>
+        </ListItem>
+
+    if (isOpen) {
+        console.log("just got list");
+        cardElement = <ListItem
             id={idNamePair._id}
             className={'list-card'}
             key={idNamePair._id}
@@ -71,7 +146,7 @@ function ListCard(props) {
                         sx={{ fontSize: 10, display: { xs: 'none', sm: 'block' } }}                        
                     >
                         Views: 
-                    </Typography>
+                </Typography>
             </Box>
             <Box sx={{ p: 1 }}>
                 <IconButton aria-label='dislike'>
@@ -93,29 +168,22 @@ function ListCard(props) {
                     <DeleteIcon style={{ fontSize: '20pt' }} />
                 </IconButton>
                 <Box>
-                <IconButton aria-label='expand'>
-                    <ExpandMoreIcon style={{ fontSize: '20pt' }} />
+                <IconButton aria-label='expand' onClick={handleUnexpandList}>
+                    <ExpandLessIcon style={{ fontSize: '20pt' }} />
                 </IconButton>
                 </Box>
             </Box>
-        </ListItem>
 
-    if (isOpen) {
-        cardElement =
-            <TextField
-                margin="normal"
-                required
-                fullWidth
-                id={"list-" + idNamePair._id}
-                label="Top 5 List Name"
-                name="name"
-                autoComplete="Top 5 List Name"
-                className='list-card'
-                defaultValue={idNamePair.name}
-                inputProps={{ style: { fontSize: 48 } }}
-                InputLabelProps={{ style: { fontSize: 24 } }}
-                autoFocus
-            />
+            <List sx={{ width: '90%', left: '5%', bgcolor: '#2c2f70'}}>
+                {
+                    idNamePair.items.map((item, index) => (
+                        <ListItem>
+                        {(index+1)}. {item}
+                        </ListItem>
+                    ))
+                }
+            </List>
+        </ListItem>
     }
     return (
         cardElement

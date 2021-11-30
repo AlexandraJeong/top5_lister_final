@@ -2,7 +2,7 @@ import { useContext } from 'react'
 import { GlobalStoreContext } from '../store'
 import { Typography } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add';
-import Fab from '@mui/material/Fab'
+import IconButton from '@mui/material/IconButton';
 import AuthContext from '../auth';
 
 /*
@@ -29,7 +29,9 @@ function Statusbar() {
             );
         } else {
             return (<div id="top5-statusbar">
+                <IconButton aria-label='createList' onClick = {handleCreateNewList}>
                 <AddIcon style={{ fontSize: '50pt' }}/>
+                </IconButton>
                 <Typography variant="h4">Your Lists</Typography>
             </div>);
         }

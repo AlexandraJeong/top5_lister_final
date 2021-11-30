@@ -38,6 +38,9 @@ body {
   left: 0%;
 }
 
+#top5-toolbar{
+    background-color: #c4c4c4;
+}
 #top5-banner {
 
   background-color:#e0e0e0;
@@ -45,7 +48,7 @@ body {
   font-size: 48pt;
   border-color:transparent;
   border-width: 2px;    
-  border-style: solid;
+  border-style: solid;  
 }
 #splash-screen {
   background-image: linear-gradient(to bottom, white, #404ec9);
@@ -89,6 +92,10 @@ body {
   color: black;
   cursor: pointer;
   opacity: 100%;
+}
+
+.delete-disabled{
+    color: transparent;
 }
 
 .top5-button:hover {
@@ -160,6 +167,10 @@ body {
   flex-direction: column;
   overflow: scroll;
   background-color: #c4c4c4;
+}
+
+.filter-button-selected {
+    color: greenyellow;
 }
 
 .list-card,

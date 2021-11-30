@@ -27,7 +27,10 @@ export const createTop5List = (newListName, newItems, userEmail) => {
         // SPECIFY THE PAYLOAD
         name: newListName,
         items: newItems,
-        ownerEmail: userEmail
+        ownerEmail: userEmail,
+        views: 0,
+        isPublished: false,
+        isCommunity: false
     })
 }
 export const deleteTop5ListById = (id) => api.delete(`/top5list/${id}`)

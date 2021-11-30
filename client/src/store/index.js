@@ -27,7 +27,8 @@ export const GlobalStoreActionType = {
     UNMARK_LIST_FOR_DELETION: "UNMARK_LIST_FOR_DELETION",
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
     SET_ITEM_EDIT_ACTIVE: "SET_ITEM_EDIT_ACTIVE",
-    SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE"
+    SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
+    CHANGE_FILTER_MODE: "CHANGE_FILTER_MODE"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -43,7 +44,8 @@ function GlobalStoreContextProvider(props) {
         newListCounter: 0,
         listNameActive: false,
         itemActive: false,
-        listMarkedForDeletion: null
+        listMarkedForDeletion: null,
+        filterMode: ""
     });
     const history = useHistory();
 
@@ -66,7 +68,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     isListNameEditActive: false,
                     isItemEditActive: false,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    filterMode: store.filterMode
                 });
             }
             // STOP EDITING THE CURRENT LIST
@@ -77,7 +80,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     isListNameEditActive: false,
                     isItemEditActive: false,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    filterMode: store.filterMode
                 })
             }
             // CREATE A NEW LIST
@@ -88,7 +92,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter + 1,
                     isListNameEditActive: false,
                     isItemEditActive: false,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    filterMode: store.filterMode
                 })
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
@@ -99,7 +104,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     isListNameEditActive: false,
                     isItemEditActive: false,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    filterMode: store.filterMode
                 });
             }
             // PREPARE TO DELETE A LIST
@@ -110,7 +116,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     isListNameEditActive: false,
                     isItemEditActive: false,
-                    listMarkedForDeletion: payload
+                    listMarkedForDeletion: payload,
+                    filterMode: store.filterMode
                 });
             }
             // PREPARE TO DELETE A LIST
@@ -121,7 +128,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     isListNameEditActive: false,
                     isItemEditActive: false,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    filterMode: store.filterMode
                 });
             }
             // UPDATE A LIST
@@ -132,7 +140,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     isListNameEditActive: false,
                     isItemEditActive: false,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    filterMode: store.filterMode
                 });
             }
             // START EDITING A LIST ITEM
@@ -143,7 +152,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     isListNameEditActive: false,
                     isItemEditActive: true,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    filterMode: store.filterMode
                 });
             }
             // START EDITING A LIST NAME
@@ -154,13 +164,54 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     isListNameEditActive: true,
                     isItemEditActive: false,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    filterMode: store.filterMode
+                });
+            }
+            case GlobalStoreActionType.CHANGE_FILTER_MODE: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    isListNameEditActive: true,
+                    isItemEditActive: false,
+                    listMarkedForDeletion: null,
+                    filterMode: payload
                 });
             }
             default:
                 return store;
         }
     }
+
+    store.viewYourLists = async function (){
+        storeReducer({
+            type: GlobalStoreActionType.CHANGE_FILTER_MODE,
+            payload: "your_lists"
+        });
+    }
+
+    store.viewAllLists = async function (){
+        storeReducer({
+            type: GlobalStoreActionType.CHANGE_FILTER_MODE,
+            payload: "all_lists"
+        });
+    }
+
+    store.viewUserLists = async function (){
+        storeReducer({
+            type: GlobalStoreActionType.CHANGE_FILTER_MODE,
+            payload: "user_lists"
+        });
+    }
+
+    store.viewCommunityLists = async function (){
+        storeReducer({
+            type: GlobalStoreActionType.CHANGE_FILTER_MODE,
+            payload: "community_lists"
+        });
+    }
+    
 
     // THESE ARE THE FUNCTIONS THAT WILL UPDATE OUR STORE AND
     // DRIVE THE STATE OF THE APPLICATION. WE'LL CALL THESE IN 
@@ -345,22 +396,6 @@ function GlobalStoreContextProvider(props) {
                 payload: store.currentList
             });
         }
-    }
-
-    store.undo = function () {
-        tps.undoTransaction();
-    }
-
-    store.redo = function () {
-        tps.doTransaction();
-    }
-
-    store.canUndo = function() {
-        return tps.hasTransactionToUndo();
-    }
-
-    store.canRedo = function() {
-        return tps.hasTransactionToRedo();
     }
 
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
