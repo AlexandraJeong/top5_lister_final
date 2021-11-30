@@ -81,7 +81,7 @@ export default function AppBanner() {
         let userInitials = auth.getUserInitials();
         console.log("userInitials: " + userInitials);
         if (loggedIn) 
-            return <Fab color="primary" aria-label="add">
+            return <Fab id="user-circle" aria-label="add">
             {userInitials}
           </Fab>;
         else

@@ -1,5 +1,6 @@
 import { useContext, useState } from 'react'
 import { GlobalStoreContext } from '../store'
+import AuthContext from '../auth'
 import Box from '@mui/material/Box';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
@@ -7,6 +8,8 @@ import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
 import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined';
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -19,13 +22,12 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
     @author McKilla Gorilla
 */
 function ListCard(props) {
+    const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
     const [isOpen, setIsOpen] = useState(false);
     const [text, setText] = useState("");
     const {idNamePair, selected } = props;
 
-    console.log("Views");
-    console.log(idNamePair.views);
     function handleLoadList(event, id) {
         console.log("handleLoadList for " + id);
         if (!event.target.disabled) {
@@ -57,7 +59,24 @@ function ListCard(props) {
         setIsOpen(false);
     }
 
-    
+    //CHECKING LIKES/DISLIKES
+    function doesUserLikeList(){
+        return idNamePair.likesList.includes(auth.user.email);
+    }
+    function doesUserDislikeList(){
+        return idNamePair.dislikesList.includes(auth.user.email);
+    }
+
+    //LIKE/DISLIKE HANDLERS
+    function likeListHandler(event){
+        event.stopPropagation();
+        store.likeList(idNamePair._id);
+    }
+    function dislikeListHandler(event){
+        event.stopPropagation();
+        store.dislikeList(idNamePair._id);
+    }
+
     let cardElement =
         <ListItem
             id={idNamePair._id}
@@ -68,8 +87,10 @@ function ListCard(props) {
         >
             <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box>
             <Box sx={{ p: 1 }}>
-                <IconButton aria-label='like'>
-                    <ThumbUpOutlinedIcon style={{ fontSize: '20pt' }} />
+                <IconButton aria-label='like'
+                disabled = {doesUserLikeList()}
+                onClick = {likeListHandler}>
+                    {doesUserLikeList()?<ThumbUpIcon style={{ fontSize: '20pt' }}/>:<ThumbUpOutlinedIcon style={{ fontSize: '20pt' }} />}
                 </IconButton>
                 <Typography
                     noWrap
@@ -88,8 +109,10 @@ function ListCard(props) {
                     </Typography>
             </Box>
             <Box sx={{ p: 1 }}>
-                <IconButton aria-label='dislike'>
-                    <ThumbDownOutlinedIcon style={{ fontSize: '20pt' }} />
+                <IconButton aria-label='dislike'
+                disabled = {doesUserDislikeList()}
+                onClick = {dislikeListHandler}>
+                    {doesUserDislikeList()?<ThumbDownIcon style={{ fontSize: '20pt' }} />:<ThumbDownOutlinedIcon style={{ fontSize: '20pt' }} />}
                 </IconButton>
                 <Typography
                     noWrap

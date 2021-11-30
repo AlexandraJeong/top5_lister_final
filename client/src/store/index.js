@@ -184,34 +184,83 @@ function GlobalStoreContextProvider(props) {
         }
     }
 
+    //FOR LIKING/DISLIKING LISTS
+    store.unlikeList = function(top5List){
+        if(top5List.likesList.includes(auth.user.email)){
+            top5List.likesList.splice(top5List.likesList.indexOf(auth.user.email),1);
+        }
+    }
+    store.undislikeList = function(top5List){
+        if(top5List.dislikesList.includes(auth.user.email)){
+            top5List.dislikesList.splice(top5List.dislikesList.indexOf(auth.user.email),1);
+        }
+    }
+    store.likeList = async function(id){
+        console.log("liking list");
+        let response = await api.getTop5ListById(id);
+        if (response.status === 200) {
+            let top5List = response.data.top5List;
+            console.log("getting list success");
+            console.log(top5List.likesList);
+            store.undislikeList(top5List);
+            top5List.likesList[top5List.likesList.length]=auth.user.email;
+            console.log(auth.user.email);
+            console.log(top5List.likesList);
+            updateList(top5List);
+        }
+    }
+    store.dislikeList = async function(id){
+        let response = await api.getTop5ListById(id);
+        if (response.status === 200) {
+            let top5List = response.data.top5List;
+            store.unlikeList(top5List);
+            top5List.dislikesList[top5List.dislikesList.length]=auth.user.email;
+            updateList(top5List);
+        }
+    }
+
+    async function updateList(top5List) {
+        let response = await api.updateTop5ListById(top5List._id, top5List);
+        if (response.status === 200) {
+            async function getListPairs() {
+                response = await api.getTop5ListPairs();
+                if (response.status === 200) {
+                    let pairsArray = response.data.idNamePairs;
+                    storeReducer({
+                        type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                        payload: pairsArray
+                    });
+                }
+            }
+            getListPairs();
+        }
+    }
+
+    //FOR VIEWING LISTS
     store.viewYourLists = async function (){
         storeReducer({
             type: GlobalStoreActionType.CHANGE_FILTER_MODE,
             payload: "your_lists"
         });
     }
-
     store.viewAllLists = async function (){
         storeReducer({
             type: GlobalStoreActionType.CHANGE_FILTER_MODE,
             payload: "all_lists"
         });
     }
-
     store.viewUserLists = async function (){
         storeReducer({
             type: GlobalStoreActionType.CHANGE_FILTER_MODE,
             payload: "user_lists"
         });
     }
-
     store.viewCommunityLists = async function (){
         storeReducer({
             type: GlobalStoreActionType.CHANGE_FILTER_MODE,
             payload: "community_lists"
         });
-    }
-    
+    } 
 
     // THESE ARE THE FUNCTIONS THAT WILL UPDATE OUR STORE AND
     // DRIVE THE STATE OF THE APPLICATION. WE'LL CALL THESE IN 
