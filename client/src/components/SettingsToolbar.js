@@ -1,5 +1,4 @@
 import { useContext, useState } from 'react';
-import { Link } from 'react-router-dom'
 import AuthContext from '../auth';
 import InputBase from '@mui/material/InputBase';
 import { GlobalStoreContext } from '../store'

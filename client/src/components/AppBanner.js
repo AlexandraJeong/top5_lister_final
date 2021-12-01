@@ -10,6 +10,8 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
+import SettingsToolbar from './SettingsToolbar.js'
+
 import Typography from '@mui/material/Typography';
 
 export default function AppBanner() {
@@ -52,7 +54,7 @@ export default function AppBanner() {
             <MenuItem onClick={handleMenuClose}><Link to='/register/'>Create New Account</Link></MenuItem>
         </Menu>
     );
-    const loggedInMenu = 
+    const loggedInMenu =
         <Menu
             anchorEl={anchorEl}
             anchorOrigin={{
@@ -69,34 +71,33 @@ export default function AppBanner() {
             onClose={handleMenuClose}
         >
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
-        </Menu>        
+        </Menu>
 
     let editToolbar = "";
     let menu = loggedOutMenu;
     if (auth.loggedIn) {
         menu = loggedInMenu;
     }
-    
+
     function getAccountMenu(loggedIn) {
         let userInitials = auth.getUserInitials();
         console.log("userInitials: " + userInitials);
-        if (loggedIn) 
+        if (loggedIn)
             return <Fab id="user-circle" aria-label="add">
-            {userInitials}
-          </Fab>;
+                {userInitials}
+            </Fab>;
         else
             return <AccountCircle />;
     }
-
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar id = "top5-banner" position="static">
+            <AppBar id="top5-banner" position="static">
                 <Toolbar>
-                    <Typography                        
+                    <Typography
                         variant="h4"
                         noWrap
                         component="div"
-                        sx={{ display: { xs: 'none', sm: 'block' } }}                        
+                        sx={{ display: { xs: 'none', sm: 'block' } }}
                     >
                         <Link style={{ textDecoration: 'none', color: '#d4af39' }} to='/'>T<sup>5</sup>L</Link>
                     </Typography>
@@ -111,7 +112,7 @@ export default function AppBanner() {
                             onClick={handleProfileMenuOpen}
                             color="inherit"
                         >
-                            { getAccountMenu(auth.loggedIn) }
+                            {getAccountMenu(auth.loggedIn)}
                         </IconButton>
                     </Box>
                 </Toolbar>

@@ -14,6 +14,7 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import Grid from '@mui/material/Grid';
+import { Link } from 'react-router-dom'
 
 /*
     This is a card in our list of top 5 lists. It lets select
@@ -30,16 +31,14 @@ function ListCard(props) {
     const { idNamePair, selected } = props;
 
     function handleLoadList(event, id) {
+        event.stopPropagation();
         console.log("handleLoadList for " + id);
         if (!event.target.disabled) {
-            let _id = event.target.id;
-            if (_id.indexOf('list-card-text-') >= 0)
-                _id = ("" + _id).substring("list-card-text-".length);
-
-            console.log("load " + event.target.id);
+            let _id = idNamePair._id
+            console.log("load " + _id);
 
             // CHANGE THE CURRENT LIST
-            store.setCurrentList(id);
+            store.setCurrentList(_id);
         }
     }
 
@@ -78,6 +77,17 @@ function ListCard(props) {
         store.dislikeList(idNamePair._id);
     }
 
+    let items =
+
+            <List sx={{ width: '90%', left: '5%', bgcolor: '#2c2f70' }}>
+                {
+                    idNamePair.items.map((item, index) => (
+                        <ListItem>
+                            {(index + 1)}. {item}
+                        </ListItem>
+                    ))
+                }
+            </List>
     let cardElement =
         <ListItem
             id={idNamePair._id}
@@ -93,16 +103,25 @@ function ListCard(props) {
                             noWrap
                             component="div"
                             display="inline"
-                            sx={{ fontSize: '20pt' }}
+                            sx={{ fontSize: '20pt',fontWeight: 'bold' }}
                         >
-                            {idNamePair.name}
-                        </Typography>
+                            {idNamePair.name}<br/>
+                            <Typography
+                            style ={{marginLeft: '15px'}}
+                            noWrap
+                            component="div"
+                            display="inline"
+                            sx={{ fontSize: '15pt' }}
+                        >
+                            By:   {idNamePair.ownerEmail}
+                    </Typography>
+                    </Typography>
                 </Grid>
                 <Grid item xs={1}>
                         <IconButton aria-label='like'
                             disabled={doesUserLikeList()}
                             onClick={likeListHandler}>
-                            {doesUserLikeList() ? <ThumbUpIcon style={{ fontSize: '20pt' }} /> : <ThumbUpOutlinedIcon style={{ fontSize: '20pt' }} />}
+                            {doesUserLikeList() ? <ThumbUpIcon style={{ fontSize: '30pt' }} /> : <ThumbUpOutlinedIcon style={{ fontSize: '30pt' }} />}
                         </IconButton>
                         <Typography
                             noWrap
@@ -117,7 +136,7 @@ function ListCard(props) {
                         <IconButton aria-label='dislike'
                             disabled={doesUserDislikeList()}
                             onClick={dislikeListHandler}>
-                            {doesUserDislikeList() ? <ThumbDownIcon style={{ fontSize: '20pt' }} /> : <ThumbDownOutlinedIcon style={{ fontSize: '20pt' }} />}
+                            {doesUserDislikeList() ? <ThumbDownIcon style={{ fontSize: '30pt' }} /> : <ThumbDownOutlinedIcon style={{ fontSize: '30pt' }} />}
                         </IconButton>
                         <Typography
                             noWrap
@@ -136,100 +155,54 @@ function ListCard(props) {
                             }} aria-label='delete'>
                             <DeleteIcon
                                 className={store.filterMode === "your_lists" ? "delete" : "delete-disabled"}
-                                style={{ fontSize: '20pt' }} />
+                                style={{ fontSize: '30pt' }} />
                         </IconButton>
                 </Grid>
                 <Grid item xs={9}>
+                    <Typography
+                            noWrap
+                            style ={{marginLeft: '15px'}}
+                            component="div"
+                            sx={{ fontSize: 15, display: { xs: 'none', sm: 'block' } }}
+                        >
+                            {!idNamePair.isPublished?<Link to = "/" onClick={handleLoadList}>Edit</Link>:"Published:"} 
+                    </Typography>
                 </Grid>
                 <Grid item xs={1}>
                         <Typography
                             noWrap
                             component="div"
-                            sx={{ fontSize: 10, display: { xs: 'none', sm: 'block' } }}
+                            sx={{ fontSize: 15, display: { xs: 'none', sm: 'block' } }}
                         >
-                            Views: {idNamePair.views}
+                            Views: 
+                            <Typography
+                            noWrap
+                            component="div"
+                            display ="inline"
+                            sx={{ color: "red"}}
+                        >
+                            {idNamePair.views}
+                        </Typography>
                         </Typography>
                 </Grid>
                 <Grid item xs={.2}></Grid>
                 <Grid item xs={1}></Grid>
                 <Box >
+                    {isOpen?
+                    <IconButton aria-label='expandLess' onClick={handleUnexpandList}>
+                    <ExpandLessIcon style={{ fontSize: '30pt' }} />
+                </IconButton>:
                     <IconButton aria-label='expand' onClick={handleExpandList}>
-                        <ExpandMoreIcon style={{ fontSize: '20pt' }} />
+                        <ExpandMoreIcon style={{ fontSize: '30pt' }} />
                     </IconButton>
+}
                 </Box>
             </Grid>
-
-
-
+            <Box>
+            {isOpen?items:null}
+            </Box>
         </ListItem>
 
-    if (isOpen) {
-        console.log("just got list");
-        cardElement = <ListItem
-            id={idNamePair._id}
-            className={'list-card'}
-            key={idNamePair._id}
-            sx={{ marginTop: '15px', display: 'flex', p: 1 }}
-            style={{ width: '100%', fontSize: '48pt' }}
-        >
-            <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box>
-            <Box sx={{ p: 1 }}>
-                <IconButton aria-label='like'>
-                    <ThumbUpOutlinedIcon style={{ fontSize: '20pt' }} />
-                </IconButton>
-                <Typography
-                    noWrap
-                    component="div"
-                    display="inline"
-                    sx={{ fontSize: '15pt' }}
-                >
-                    Number
-                </Typography>
-                <Typography
-                    noWrap
-                    component="div"
-                    sx={{ fontSize: 10, display: { xs: 'none', sm: 'block' } }}
-                >
-                    Views:
-                </Typography>
-            </Box>
-            <Box sx={{ p: 1 }}>
-                <IconButton aria-label='dislike'>
-                    <ThumbDownOutlinedIcon style={{ fontSize: '20pt' }} />
-                </IconButton>
-                <Typography
-                    noWrap
-                    component="div"
-                    display="inline"
-                    sx={{ fontSize: '15pt' }}
-                >
-                    Number
-                </Typography>
-            </Box>
-            <Box sx={{ p: 1 }}>
-                <IconButton onClick={(event) => {
-                    handleDeleteList(event, idNamePair._id)
-                }} aria-label='delete'>
-                    <DeleteIcon style={{ fontSize: '20pt' }} />
-                </IconButton>
-                <Box>
-                    <IconButton aria-label='expand' onClick={handleUnexpandList}>
-                        <ExpandLessIcon style={{ fontSize: '20pt' }} />
-                    </IconButton>
-                </Box>
-            </Box>
-
-            <List sx={{ width: '90%', left: '5%', bgcolor: '#2c2f70' }}>
-                {
-                    idNamePair.items.map((item, index) => (
-                        <ListItem>
-                            {(index + 1)}. {item}
-                        </ListItem>
-                    ))
-                }
-            </List>
-        </ListItem>
-    }
     return (
         cardElement
     );

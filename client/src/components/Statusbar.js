@@ -20,21 +20,18 @@ function Statusbar() {
 
     let text = "";
     if (auth.user) {
-        if (store.currentList) {
-            text = store.currentList.name;
-            return (
-                <div id="top5-statusbar">
-                    <Typography variant="h4">{text}</Typography>
-                </div>
-            );
-        } else {
+            //text = store.currentList.name;
+            //return (
+            //    <div id="top5-statusbar">
+            //        <Typography variant="h4">{text}</Typography>
+            //    </div>
+            //);
             return (<div id="top5-statusbar">
                 <IconButton aria-label='createList' onClick = {handleCreateNewList}>
                 <AddIcon style={{ fontSize: '50pt' }}/>
                 </IconButton>
                 <Typography variant="h4">Your Lists</Typography>
             </div>);
-        }
     } else {
         return null;
     }

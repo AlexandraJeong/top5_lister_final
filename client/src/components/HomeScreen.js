@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react'
 import { GlobalStoreContext } from '../store'
 import ListCard from './ListCard.js'
-import Toolbar from './Toolbar.js'
+import SettingsToolbar from './SettingsToolbar.js'
 import MUIDeleteModal from './MUIDeleteModal'
 
 import List from '@mui/material/List';
@@ -35,7 +35,7 @@ const HomeScreen = () => {
     return (
         <div id="top5-list-selector">
             <div id="list-selector-heading">
-            <Toolbar className = {store.currentList?"disabled-toolbar":"toolbar"}/>
+            <SettingsToolbar className = "top5-toolbar"/>
             </div>
             <div id="list-selector-list">
                 {
