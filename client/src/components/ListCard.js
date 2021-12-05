@@ -11,10 +11,12 @@ import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import Typography from '@mui/material/Typography';
+import Stack from '@mui/material/Stack';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import Grid from '@mui/material/Grid';
 import { Link } from 'react-router-dom'
+import TextField from '@mui/material/TextField';
 
 /*
     This is a card in our list of top 5 lists. It lets select
@@ -32,10 +34,8 @@ function ListCard(props) {
 
     function handleLoadList(event, id) {
         event.stopPropagation();
-        console.log("handleLoadList for " + id);
         if (!event.target.disabled) {
             let _id = idNamePair._id
-            console.log("load " + _id);
 
             // CHANGE THE CURRENT LIST
             store.setCurrentList(_id);
@@ -77,130 +77,174 @@ function ListCard(props) {
         store.dislikeList(idNamePair._id);
     }
 
-    let items =
+    //CREATING COMMENTS
+    function handleKeyPress(event) {
+        if (event.code === "Enter") {
+            console.log("key pressed");
+            let comment = {
+                user: auth.user.email,
+                content: text
+            };
+            store.addComment(idNamePair._id,comment);
+            setText("");
+        }
+    }
 
-            <List sx={{ width: '90%', left: '5%', bgcolor: '#2c2f70' }}>
-                {
-                    idNamePair.items.map((item, index) => (
-                        <ListItem>
-                            {(index + 1)}. {item}
-                        </ListItem>
-                    ))
-                }
-            </List>
+    function handleUpdateText(event) {
+        setText(event.target.value);
+    }
+
+    let items =
+    <Stack width = "100%" direction="row" spacing = {2}>
+        <List className = "expanded-info" sx={{ width: '50%', left: '2.5%', bgcolor: '#2c2f70' }}>
+            {
+                idNamePair.items.map((item, index) => (
+                    <ListItem>
+                        <Typography fontSize="25px">
+                        {(index + 1)}. {item}
+                        </Typography>
+                        {idNamePair.isCommunity? 
+                        <Typography fontSize="15px">
+                        ({idNamePair.communityItems[index].votes} Votes)
+                        </Typography>:null}
+                    </ListItem>
+                ))
+            }
+        </List>
+        {idNamePair.isPublished?<List className = "comment-box" sx={{ width: '50%', left: '2.5%', p: 0}}>
+            {
+                idNamePair.comments.map((comment, index) => (
+                    <ListItem className = "comments">
+                        <Typography fontSize="25px">
+                        {comment.user}<br/>{comment.content}
+                        </Typography>
+                    </ListItem>
+                ))
+            }
+            <TextField style = {{
+                    backgroundColor: 'white',
+                    width: "100%",
+                    borderRadius: "15px"
+                }}
+                onKeyPress={handleKeyPress}
+                onChange={handleUpdateText}
+                value = {text}/>
+                
+        </List>:null}
+    </Stack>
     let cardElement =
         <ListItem
             id={idNamePair._id}
             className={'list-card'}
             key={idNamePair._id}
             sx={{ marginTop: '15px', display: 'flex', p: 1 }}
-            style={{ width: '100%'}}
+            style={{ width: '100%' }}
         >
+            <Stack width="100%">
             <Grid container spacing={2}>
                 <Grid item xs={9}>
-                <Typography
-                            style ={{marginLeft: '15px'}}
-                            noWrap
-                            component="div"
-                            display="inline"
-                            sx={{ fontSize: '20pt',fontWeight: 'bold' }}
-                        >
-                            {idNamePair.name}<br/>
-                            <Typography
-                            style ={{marginLeft: '15px'}}
+                    <Typography
+                        style={{ marginLeft: '15px' }}
+                        noWrap
+                        component="div"
+                        display="inline"
+                        sx={{ fontSize: '20pt', fontWeight: 'bold' }}
+                    >
+                        {idNamePair.name}<br />
+                        <Typography
+                            style={{ marginLeft: '15px' }}
                             noWrap
                             component="div"
                             display="inline"
                             sx={{ fontSize: '15pt' }}
                         >
                             By:   {idNamePair.ownerEmail}
-                    </Typography>
-                    </Typography>
-                </Grid>
-                <Grid item xs={1}>
-                        <IconButton aria-label='like'
-                            disabled={doesUserLikeList()}
-                            onClick={likeListHandler}>
-                            {doesUserLikeList() ? <ThumbUpIcon style={{ fontSize: '30pt' }} /> : <ThumbUpOutlinedIcon style={{ fontSize: '30pt' }} />}
-                        </IconButton>
-                        <Typography
-                            noWrap
-                            component="div"
-                            display="inline"
-                            sx={{ fontSize: '15pt' }}
-                        >
-                            {idNamePair.likesList.length}
                         </Typography>
+                    </Typography>
                 </Grid>
                 <Grid item xs={1}>
-                        <IconButton aria-label='dislike'
-                            disabled={doesUserDislikeList()}
-                            onClick={dislikeListHandler}>
-                            {doesUserDislikeList() ? <ThumbDownIcon style={{ fontSize: '30pt' }} /> : <ThumbDownOutlinedIcon style={{ fontSize: '30pt' }} />}
-                        </IconButton>
-                        <Typography
-                            noWrap
-                            component="div"
-                            display="inline"
-                            sx={{ fontSize: '15pt' }}
-                        >
-                            {idNamePair.dislikesList.length}
-                        </Typography>
+                    <IconButton aria-label='like'
+                        disabled={doesUserLikeList()}
+                        onClick={likeListHandler}>
+                        {doesUserLikeList() ? <ThumbUpIcon style={{ fontSize: '30pt' }} /> : <ThumbUpOutlinedIcon style={{ fontSize: '30pt' }} />}
+                    </IconButton>
+                    <Typography
+                        noWrap
+                        component="div"
+                        display="inline"
+                        sx={{ fontSize: '15pt' }}
+                    >
+                        {idNamePair.likesList.length}
+                    </Typography>
                 </Grid>
                 <Grid item xs={1}>
-                        <IconButton
-                            disabled={store.filterMode != "your_lists"}
-                            onClick={(event) => {
-                                handleDeleteList(event, idNamePair._id)
-                            }} aria-label='delete'>
-                            <DeleteIcon
-                                className={store.filterMode === "your_lists" ? "delete" : "delete-disabled"}
-                                style={{ fontSize: '30pt' }} />
-                        </IconButton>
+                    <IconButton aria-label='dislike'
+                        disabled={doesUserDislikeList()}
+                        onClick={dislikeListHandler}>
+                        {doesUserDislikeList() ? <ThumbDownIcon style={{ fontSize: '30pt' }} /> : <ThumbDownOutlinedIcon style={{ fontSize: '30pt' }} />}
+                    </IconButton>
+                    <Typography
+                        noWrap
+                        component="div"
+                        display="inline"
+                        sx={{ fontSize: '15pt' }}
+                    >
+                        {idNamePair.dislikesList.length}
+                    </Typography>
                 </Grid>
+                <Grid item xs={1}>
+                    <IconButton
+                        disabled={store.filterMode != "your_lists"}
+                        onClick={(event) => {
+                            handleDeleteList(event, idNamePair._id)
+                        }} aria-label='delete'>
+                        <DeleteIcon
+                            className={store.filterMode === "your_lists" ? "delete" : "delete-disabled"}
+                            style={{ fontSize: '30pt' }} />
+                    </IconButton>
+                </Grid>
+                {isOpen ? items : null}
                 <Grid item xs={9}>
                     <Typography
-                            noWrap
-                            style ={{marginLeft: '15px'}}
-                            component="div"
-                            sx={{ fontSize: 15, display: { xs: 'none', sm: 'block' } }}
-                        >
-                            {!idNamePair.isPublished?<Link to = "/" onClick={handleLoadList}>Edit</Link>:"Published:"} 
+                        noWrap
+                        style={{ marginLeft: '15px' }}
+                        component="div"
+                        sx={{ fontSize: 15, display: { xs: 'none', sm: 'block' } }}
+                    >
+                        {!idNamePair.isPublished ? <Link to="/" onClick={handleLoadList}>Edit</Link> : "Published: " + idNamePair.publishDateString}
                     </Typography>
                 </Grid>
                 <Grid item xs={1}>
+                    <Typography
+                        noWrap
+                        component="div"
+                        sx={{ fontSize: 15, display: { xs: 'none', sm: 'block' } }}
+                    >
+                        Views:
                         <Typography
                             noWrap
                             component="div"
-                            sx={{ fontSize: 15, display: { xs: 'none', sm: 'block' } }}
-                        >
-                            Views: 
-                            <Typography
-                            noWrap
-                            component="div"
-                            display ="inline"
-                            sx={{ color: "red"}}
+                            display="inline"
+                            sx={{ color: "red" }}
                         >
                             {idNamePair.views}
                         </Typography>
-                        </Typography>
+                    </Typography>
                 </Grid>
                 <Grid item xs={.2}></Grid>
                 <Grid item xs={1}></Grid>
                 <Box >
-                    {isOpen?
-                    <IconButton aria-label='expandLess' onClick={handleUnexpandList}>
-                    <ExpandLessIcon style={{ fontSize: '30pt' }} />
-                </IconButton>:
-                    <IconButton aria-label='expand' onClick={handleExpandList}>
-                        <ExpandMoreIcon style={{ fontSize: '30pt' }} />
-                    </IconButton>
-}
+                    {isOpen ?
+                        <IconButton aria-label='expandLess' onClick={handleUnexpandList}>
+                            <ExpandLessIcon style={{ fontSize: '30pt' }} />
+                        </IconButton> :
+                        <IconButton aria-label='expand' onClick={handleExpandList}>
+                            <ExpandMoreIcon style={{ fontSize: '30pt' }} />
+                        </IconButton>
+                    }
                 </Box>
             </Grid>
-            <Box>
-            {isOpen?items:null}
-            </Box>
+            </Stack>
         </ListItem>
 
     return (

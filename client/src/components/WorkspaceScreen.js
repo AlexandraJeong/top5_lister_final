@@ -27,8 +27,16 @@ function WorkspaceScreen() {
 
     const handlePublish = (event) =>{
         event.stopPropagation();
+        let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        let d = new Date();
+        let month = months[d.getMonth()];
+        let day = d.getDate();
+        let year = d.getFullYear();
+        store.currentList.publishDate = d;
+        store.currentList.publishDateString = month + " " + day  + ", " + year;
         store.currentList.isPublished=true;
         store.updateCurrentList();
+        store.updateCommunityList(store.currentList);
         store.closeCurrentList();
     }
 

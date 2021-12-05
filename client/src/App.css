@@ -209,6 +209,21 @@ body {
     color: greenyellow;
 }
 
+.expanded-info{
+    border-radius: 15px;
+    border:2px solid black;
+    color:#d4af39;
+}
+.comment-box{
+    background-color:transparent;   
+}
+
+.comments{
+    border-radius: 15px;
+    border:2px solid black;
+    background-color:#d4af39;
+}
+
 .list-card,
 .selected-list-card,
 .unselected-list-card {

@@ -81,7 +81,6 @@ export default function AppBanner() {
 
     function getAccountMenu(loggedIn) {
         let userInitials = auth.getUserInitials();
-        console.log("userInitials: " + userInitials);
         if (loggedIn)
             return <Fab id="user-circle" aria-label="add">
                 {userInitials}

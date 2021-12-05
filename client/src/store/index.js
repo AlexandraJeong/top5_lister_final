@@ -1,9 +1,6 @@
 import { createContext, useContext, useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import jsTPS from '../common/jsTPS'
 import api from './store-request-api'
-import MoveItem_Transaction from '../transactions/MoveItem_Transaction'
-import UpdateItem_Transaction from '../transactions/UpdateItem_Transaction'
 import AuthContext from '../auth'
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -14,7 +11,6 @@ import AuthContext from '../auth'
 
 // THIS IS THE CONTEXT WE'LL USE TO SHARE OUR STORE
 export const GlobalStoreContext = createContext({});
-console.log("create GlobalStoreContext");
 
 // THESE ARE ALL THE TYPES OF UPDATES TO OUR GLOBAL
 // DATA STORE STATE THAT CAN BE PROCESSED
@@ -31,8 +27,6 @@ export const GlobalStoreActionType = {
     CHANGE_FILTER_MODE: "CHANGE_FILTER_MODE"
 }
 
-// WE'LL NEED THIS TO PROCESS TRANSACTIONS
-const tps = new jsTPS();
 
 // WITH THIS WE'RE MAKING OUR GLOBAL DATA STORE
 // AVAILABLE TO THE REST OF THE APPLICATION
@@ -49,11 +43,8 @@ function GlobalStoreContextProvider(props) {
     });
     const history = useHistory();
 
-    console.log("inside useGlobalStore");
-
     // SINCE WE'VE WRAPPED THE STORE IN THE AUTH CONTEXT WE CAN ACCESS THE USER HERE
     const { auth } = useContext(AuthContext);
-    console.log("auth: " + auth);
 
     // HERE'S THE DATA STORE'S REDUCER, IT MUST
     // HANDLE EVERY TYPE OF STATE CHANGE
@@ -81,7 +72,7 @@ function GlobalStoreContextProvider(props) {
                     isListNameEditActive: false,
                     isItemEditActive: false,
                     listMarkedForDeletion: null,
-                    filterMode: store.filterMode
+                    filterMode: "your_lists"
                 })
             }
             // CREATE A NEW LIST
@@ -185,36 +176,31 @@ function GlobalStoreContextProvider(props) {
     }
 
     //FOR LIKING/DISLIKING LISTS
-    store.unlikeList = function(top5List){
-        if(top5List.likesList.includes(auth.user.email)){
-            top5List.likesList.splice(top5List.likesList.indexOf(auth.user.email),1);
+    store.unlikeList = function (top5List) {
+        if (top5List.likesList.includes(auth.user.email)) {
+            top5List.likesList.splice(top5List.likesList.indexOf(auth.user.email), 1);
         }
     }
-    store.undislikeList = function(top5List){
-        if(top5List.dislikesList.includes(auth.user.email)){
-            top5List.dislikesList.splice(top5List.dislikesList.indexOf(auth.user.email),1);
+    store.undislikeList = function (top5List) {
+        if (top5List.dislikesList.includes(auth.user.email)) {
+            top5List.dislikesList.splice(top5List.dislikesList.indexOf(auth.user.email), 1);
         }
     }
-    store.likeList = async function(id){
-        console.log("liking list");
+    store.likeList = async function (id) {
         let response = await api.getTop5ListById(id);
         if (response.status === 200) {
             let top5List = response.data.top5List;
-            console.log("getting list success");
-            console.log(top5List.likesList);
             store.undislikeList(top5List);
-            top5List.likesList[top5List.likesList.length]=auth.user.email;
-            console.log(auth.user.email);
-            console.log(top5List.likesList);
+            top5List.likesList[top5List.likesList.length] = auth.user.email;
             updateList(top5List);
         }
     }
-    store.dislikeList = async function(id){
+    store.dislikeList = async function (id) {
         let response = await api.getTop5ListById(id);
         if (response.status === 200) {
             let top5List = response.data.top5List;
             store.unlikeList(top5List);
-            top5List.dislikesList[top5List.dislikesList.length]=auth.user.email;
+            top5List.dislikesList[top5List.dislikesList.length] = auth.user.email;
             updateList(top5List);
         }
     }
@@ -236,8 +222,98 @@ function GlobalStoreContextProvider(props) {
         }
     }
 
+    store.addComment = async function (id, comment) {
+        let response = await api.getTop5ListById(id);
+        if (response.status === 200) {
+            let top5List = response.data.top5List;
+            top5List.comments[top5List.comments.length] = comment;
+            response = await api.updateTop5ListById(top5List._id, top5List);
+            if (response.status === 200) {
+                async function getListPairs() {
+                    if (store.filterMode === "your_lists") {
+                        response = await api.getTop5ListPairs();
+                    } else if (store.filterMode === "all_lists") {
+                        response = await api.getPublishedTop5ListPairs();
+                    }
+                    if (response.status === 200) {
+                        let pairsArray = response.data.idNamePairs;
+                        storeReducer({
+                            type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                            payload: pairsArray
+                        });
+                    }
+                }
+                getListPairs();
+            }
+        }
+    }
+    store.createNewCommunityList= async function (top5List){
+        console.log("CREATING COMMUNITY LIST");//scrap
+        const response = await api.createTop5List(top5List.name, top5List.items, null);
+        if (response.status === 201) {
+            let newList = response.data.top5List;
+            console.log(newList);
+            newList.isCommunity = true;
+            newList.isPublished = true;
+            let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            let d = new Date();
+            let month = months[d.getMonth()];
+            let day = d.getDate();
+            let year = d.getFullYear();
+            newList.publishDate = d;
+            newList.publishDateString = month + " " + day  + ", " + year;
+            top5List.items.map((item, index) => (
+                newList.communityItems[index] = {
+                    item: top5List.items[index],
+                    votes: (5 - index)
+                }
+            ));
+            console.log("newlist");
+            console.log(newList);
+            updateList(newList);
+        }
+    }
+    
+    store.updateCommunityList = async function (top5List) {
+        console.log("CREATING COMMUNITY LIST1");//scrap
+        let response = await api.getCommunityTop5ListPairs();
+        if (response.status === 200) {
+            console.log("CREATING COMMUNITY LIST4");//scrap
+            let pairsArray = response.data.idNamePairs;
+            if(!pairsArray.length){
+                console.log("wow");
+                store.createNewCommunityList(top5List);
+            }
+            for (let i = 0; i < pairsArray.length; i++) {
+                if (pairsArray[i].name === top5List.name) {//if names match
+                    console.log("CREATING COMMUNITY LIST3");//scrap
+                    let communityList = pairsArray[i];
+                    //add points to each of the community items and sort
+                    for (let x = 0; x < 5; x++) {
+                        for (let j = 0; j < communityList.communityItems.length; j++) {
+                            if (top5List.items[x] === communityList.communityItems[j].name) {
+                                console.log("CREATING COMMUNITY LIST2");//scrap
+                                communityList.communityItems[j].votes += (5 - x);
+                            } else if (communityList.communityItems.length - 1 === j) {
+                                //if item not in aggregate list
+                                communityList.communityItems[communityList.communityItems.length] = {
+                                    name: top5List.items[x],
+                                    votes: (5 - x)
+                                };
+                            }
+                        }
+                    }
+                } else if (i === pairsArray.length) {
+                    //create new community list
+                    store.createNewCommunityList(top5List);
+                    }
+                }
+            //handle if list isnt already in aggregate
+        }
+    }
+
     //FOR VIEWING LISTS
-    store.viewYourLists = async function (){
+    store.viewYourLists = async function () {
         async function getYourListPairs() {
             let response = await api.getTop5ListPairs();
             if (response.status === 200) {
@@ -253,12 +329,11 @@ function GlobalStoreContextProvider(props) {
         }
         getYourListPairs();
     }
-    store.viewAllLists = async function (){
+    store.viewAllLists = async function () {
         async function getAllListPairs() {
             let response = await api.getPublishedTop5ListPairs();
             if (response.status === 200) {
                 let pairsArray = response.data.idNamePairs;
-                console.log(pairsArray);
                 storeReducer({
                     type: GlobalStoreActionType.CHANGE_FILTER_MODE,
                     payload: {
@@ -270,50 +345,26 @@ function GlobalStoreContextProvider(props) {
         }
         getAllListPairs();
     }
-    store.viewUserLists = async function (){
+    store.viewUserLists = async function () {
         storeReducer({
             type: GlobalStoreActionType.CHANGE_FILTER_MODE,
             payload: "user_lists"
         });
     }
-    store.viewCommunityLists = async function (){
-        storeReducer({
-            type: GlobalStoreActionType.CHANGE_FILTER_MODE,
-            payload: "community_lists"
-        });
-    } 
-
-    // THESE ARE THE FUNCTIONS THAT WILL UPDATE OUR STORE AND
-    // DRIVE THE STATE OF THE APPLICATION. WE'LL CALL THESE IN 
-    // RESPONSE TO EVENTS INSIDE OUR COMPONENTS.
-
-    // THIS FUNCTION PROCESSES CHANGING A LIST NAME
-    store.changeListName = async function (id, newName) {
-        let response = await api.getTop5ListById(id);
-        if (response.status === 200) {
-            let top5List = response.data.top5List;
-            top5List.name = newName;
-            async function updateList(top5List) {
-                response = await api.updateTop5ListById(top5List._id, top5List);
-                if (response.status === 200) {
-                    async function getListPairs(top5List) {
-                        response = await api.getTop5ListPairs();
-                        if (response.status === 200) {
-                            let pairsArray = response.data.idNamePairs;
-                            storeReducer({
-                                type: GlobalStoreActionType.CHANGE_LIST_NAME,
-                                payload: {
-                                    idNamePairs: pairsArray,
-                                    top5List: top5List
-                                }
-                            });
-                        }
+    store.viewCommunityLists = async function () {
+        let response = await api.getCommunityTop5ListPairs();
+            if (response.status === 200) {
+                let pairsArray = response.data.idNamePairs;
+                storeReducer({
+                    type: GlobalStoreActionType.CHANGE_FILTER_MODE,
+                    payload: {
+                        pairs: pairsArray,
+                        filterMode: "community_lists"
                     }
-                    getListPairs(top5List);
-                }
+                });
             }
-            updateList(top5List);
-        }
+            console.log(store.filterMode);
+        
     }
 
     // THIS FUNCTION PROCESSES CLOSING THE CURRENTLY LOADED LIST
@@ -322,8 +373,7 @@ function GlobalStoreContextProvider(props) {
             type: GlobalStoreActionType.CLOSE_CURRENT_LIST,
             payload: {}
         });
-        
-        tps.clearAllTransactions();
+        store.viewYourLists();
         history.push("/");
     }
 
@@ -331,9 +381,7 @@ function GlobalStoreContextProvider(props) {
     store.createNewList = async function () {
         let newListName = "Untitled" + store.newListCounter;
         const response = await api.createTop5List(newListName, ["?", "?", "?", "?", "?"], auth.user.email);
-        console.log("createNewList response: " + response);
         if (response.status === 201) {
-            tps.clearAllTransactions();
             let newList = response.data.top5List;
             storeReducer({
                 type: GlobalStoreActionType.CREATE_NEW_LIST,
@@ -351,7 +399,6 @@ function GlobalStoreContextProvider(props) {
 
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
     store.loadIdNamePairs = async function () {
-        console.log("store.loadIdNamePairs");
         const response = await api.getTop5ListPairs();
         if (response.status === 200) {
             let pairsArray = response.data.idNamePairs;
@@ -420,44 +467,6 @@ function GlobalStoreContextProvider(props) {
         }
     }
 
-    store.addMoveItemTransaction = function (start, end) {
-        let transaction = new MoveItem_Transaction(store, start, end);
-        tps.addTransaction(transaction);
-    }
-
-    store.addUpdateItemTransaction = function (index, newText) {
-        let oldText = store.currentList.items[index];
-        let transaction = new UpdateItem_Transaction(store, index, oldText, newText);
-        tps.addTransaction(transaction);
-    }
-
-    store.moveItem = function (start, end) {
-        start -= 1;
-        end -= 1;
-        if (start < end) {
-            let temp = store.currentList.items[start];
-            for (let i = start; i < end; i++) {
-                store.currentList.items[i] = store.currentList.items[i + 1];
-            }
-            store.currentList.items[end] = temp;
-        }
-        else if (start > end) {
-            let temp = store.currentList.items[start];
-            for (let i = start; i > end; i--) {
-                store.currentList.items[i] = store.currentList.items[i - 1];
-            }
-            store.currentList.items[end] = temp;
-        }
-
-        // NOW MAKE IT OFFICIAL
-        store.updateCurrentList();
-    }
-
-    store.updateItem = function (index, newItem) {
-        store.currentList.items[index] = newItem;
-        store.updateCurrentList();
-    }
-
     store.updateCurrentList = async function () {
         const response = await api.updateTop5ListById(store.currentList._id, store.currentList);
         if (response.status === 200) {
@@ -466,22 +475,6 @@ function GlobalStoreContextProvider(props) {
                 payload: store.currentList
             });
         }
-    }
-
-    // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
-    store.setIsListNameEditActive = function () {
-        storeReducer({
-            type: GlobalStoreActionType.SET_LIST_NAME_EDIT_ACTIVE,
-            payload: null
-        });
-    }
-
-    // THIS FUNCTION ENABLES THE PROCESS OF EDITING AN ITEM
-    store.setIsItemEditActive = function () {
-        storeReducer({
-            type: GlobalStoreActionType.SET_ITEM_EDIT_ACTIVE,
-            payload: null
-        });
     }
 
     return (

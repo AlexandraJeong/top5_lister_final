@@ -20,8 +20,6 @@ function Top5Item(props) {
         store.currentList.items[index]=event.target.value;
         setText(event.target.value);
     }
-    console.log("text");
-    console.log(props.text);
         let cardElement =    
             <TextField
             margin="normal"
@@ -36,7 +34,7 @@ function Top5Item(props) {
             inputProps={{style: {fontSize: '35pt'}}}
             InputLabelProps={{style: {fontSize: '35pt'}}}
             style = {{
-                height: "50px"
+                height: "100px"
             }}
             />
     return (

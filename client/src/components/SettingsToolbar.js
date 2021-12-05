@@ -69,7 +69,6 @@ export default function Toolbar(){
         event.stopPropagation();
         store.viewCommunityLists();
     }
-
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar id = "top5-toolbar" position="static">
