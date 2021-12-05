@@ -151,6 +151,7 @@ function ListCard(props) {
                         sx={{ fontSize: '20pt', fontWeight: 'bold' }}
                     >
                         {idNamePair.name}<br />
+                        {!idNamePair.isCommunity?
                         <Typography
                             style={{ marginLeft: '15px' }}
                             noWrap
@@ -159,7 +160,7 @@ function ListCard(props) {
                             sx={{ fontSize: '15pt' }}
                         >
                             By:   {idNamePair.ownerEmail}
-                        </Typography>
+                        </Typography>:null}
                     </Typography>
                 </Grid>
                 <Grid item xs={1}>
@@ -211,7 +212,8 @@ function ListCard(props) {
                         component="div"
                         sx={{ fontSize: 15, display: { xs: 'none', sm: 'block' } }}
                     >
-                        {!idNamePair.isPublished ? <Link to="/" onClick={handleLoadList}>Edit</Link> : "Published: " + idNamePair.publishDateString}
+                        {!idNamePair.isPublished ? <Link to="/" onClick={handleLoadList}>Edit</Link> : 
+                        !idNamePair.isCommunity? "Published: " + idNamePair.publishDateString: "Updated: "+idNamePair.publishDateString}
                     </Typography>
                 </Grid>
                 <Grid item xs={1}>

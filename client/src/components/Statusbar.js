@@ -20,18 +20,46 @@ function Statusbar() {
 
     let text = "";
     if (auth.user) {
-            //text = store.currentList.name;
-            //return (
-            //    <div id="top5-statusbar">
-            //        <Typography variant="h4">{text}</Typography>
-            //    </div>
-            //);
+        if(store.filterMode==="user_lists"){
+            if(store.filterText!=""){
+                return (
+                    <div id="top5-statusbar">
+                        <Typography variant="h4">{store.filterText}'s Lists</Typography>
+                    </div>
+                );
+            }else{
+                return (
+                    <div id="top5-statusbar">
+                        <Typography variant="h4">All Users' Lists</Typography>
+                    </div>
+                ); 
+            }
+        }else if(store.filterMode==="your_lists"){
             return (<div id="top5-statusbar">
                 <IconButton aria-label='createList' onClick = {handleCreateNewList}>
                 <AddIcon style={{ fontSize: '50pt' }}/>
                 </IconButton>
                 <Typography variant="h4">Your Lists</Typography>
             </div>);
+        }else if(store.filterText!=""){
+            return (
+                <div id="top5-statusbar">
+                    <Typography variant="h4">{store.filterText} Lists</Typography>
+                </div>
+            );
+        }else if(store.filterMode==="community_lists"){
+            return (
+                <div id="top5-statusbar">
+                    <Typography variant="h4">Community Lists</Typography>
+                </div>
+            );
+        }else{
+            return (
+                <div id="top5-statusbar">
+                    <Typography variant="h4">Published Lists</Typography>
+                </div>
+            );
+        }
     } else {
         return null;
     }

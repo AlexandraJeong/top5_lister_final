@@ -11,7 +11,6 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import SettingsToolbar from './SettingsToolbar.js'
-
 import Typography from '@mui/material/Typography';
 
 export default function AppBanner() {

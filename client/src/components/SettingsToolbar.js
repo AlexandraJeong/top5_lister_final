@@ -20,6 +20,21 @@ export default function Toolbar(){
     const { store } = useContext(GlobalStoreContext);
     const [anchorEl, setAnchorEl] = useState(null);
     const isMenuOpen = Boolean(anchorEl);
+    const [text, setText] = useState("");
+
+    function handleKeyPress(event) {
+        if (event.code === "Enter") {
+            if(store.filterMode==="user_lists"){
+                store.searchUserLists(text);
+            }else{
+                store.searchListsByName(text);
+            }
+        }
+    }
+
+    function handleUpdateText(event) {
+        setText(event.target.value);
+    }
 
     //SORTING MENU FUNCTIONS
     const handleSortMenuOpen = (event) => {
@@ -63,7 +78,7 @@ export default function Toolbar(){
     }
     const handleViewUserLists = (event) =>{
         event.stopPropagation();
-        store.viewUserLists();
+        store.viewUserLists("");
     }
     const handleViewCommunityLists = (event) =>{
         event.stopPropagation();
@@ -102,6 +117,8 @@ export default function Toolbar(){
                     style={{ fontSize: '40pt' }} />
                 </IconButton>
                 <TextField
+                    onKeyPress={handleKeyPress}
+                    onChange={handleUpdateText}
                     placeholder={"Search"}
                     style={{ width: 600 }}
                     className='search'
