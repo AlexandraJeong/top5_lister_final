@@ -44,6 +44,12 @@ export const updateTop5ListById = (id, top5List) => {
         top5List : top5List
     })
 }
+export const updateTop5ListByIdNoPerms = (id, top5List) => {
+    return api.put(`/top5list1/${id}`, {
+        // SPECIFY THE PAYLOAD
+        top5List : top5List
+    })
+}
 
 const apis = {
     createTop5List,
@@ -51,6 +57,7 @@ const apis = {
     getTop5ListById,
     getTop5ListPairs,
     updateTop5ListById,
+    updateTop5ListByIdNoPerms,
     getPublishedTop5ListPairs,
     getCommunityTop5ListPairs
 }

@@ -14,7 +14,9 @@ export default function SplashScreen() {
     }
 
     const handleGuest = () => {
+        auth.loginGuest();
     }
+
     return (
         <div id="splash-screen">
             The Top 5<br />

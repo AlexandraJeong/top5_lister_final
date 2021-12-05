@@ -17,6 +17,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import Grid from '@mui/material/Grid';
 import { Link } from 'react-router-dom'
 import TextField from '@mui/material/TextField';
+import { getAutoHeightDuration } from '@mui/material/styles/createTransitions';
 
 /*
     This is a card in our list of top 5 lists. It lets select
@@ -51,6 +52,9 @@ function ListCard(props) {
 
     function handleExpandList(event) {
         event.stopPropagation();
+        if(idNamePair.isPublished){
+            store.incrementViews(idNamePair._id);
+        }
         setIsOpen(true);
     }
 
@@ -61,10 +65,19 @@ function ListCard(props) {
 
     //CHECKING LIKES/DISLIKES
     function doesUserLikeList() {
-        return idNamePair.likesList.includes(auth.user.email);
+        if(!auth.isGuest){
+            return idNamePair.likesList.includes(auth.user.email);
+        }else{
+            return false;
+        }
     }
     function doesUserDislikeList() {
-        return idNamePair.dislikesList.includes(auth.user.email);
+        if(!auth.isGuest){
+            return idNamePair.dislikesList.includes(auth.user.email);
+        }else{
+            return false;
+        }
+
     }
 
     //LIKE/DISLIKE HANDLERS
@@ -121,21 +134,20 @@ function ListCard(props) {
                     </ListItem>
                 ))
             }
-            <TextField style = {{
+            {auth.isGuest? null: <TextField style = {{
                     backgroundColor: 'white',
                     width: "100%",
                     borderRadius: "15px"
                 }}
                 onKeyPress={handleKeyPress}
                 onChange={handleUpdateText}
-                value = {text}/>
-                
+                value = {text}/>}  
         </List>:null}
     </Stack>
     let cardElement =
         <ListItem
             id={idNamePair._id}
-            className={'list-card'}
+            className={idNamePair.isPublished?'list-card':'list-card-unpublished'}
             key={idNamePair._id}
             sx={{ marginTop: '15px', display: 'flex', p: 1 }}
             style={{ width: '100%' }}
@@ -165,7 +177,7 @@ function ListCard(props) {
                 </Grid>
                 <Grid item xs={1}>
                     <IconButton aria-label='like'
-                        disabled={doesUserLikeList()}
+                        disabled={doesUserLikeList()||auth.isGuest}
                         onClick={likeListHandler}>
                         {doesUserLikeList() ? <ThumbUpIcon style={{ fontSize: '30pt' }} /> : <ThumbUpOutlinedIcon style={{ fontSize: '30pt' }} />}
                     </IconButton>
@@ -180,7 +192,7 @@ function ListCard(props) {
                 </Grid>
                 <Grid item xs={1}>
                     <IconButton aria-label='dislike'
-                        disabled={doesUserDislikeList()}
+                        disabled={doesUserDislikeList()||auth.isGuest}
                         onClick={dislikeListHandler}>
                         {doesUserDislikeList() ? <ThumbDownIcon style={{ fontSize: '30pt' }} /> : <ThumbDownOutlinedIcon style={{ fontSize: '30pt' }} />}
                     </IconButton>

@@ -114,7 +114,8 @@ export default function Toolbar(){
             <Box sx={{ p: 1 }}>
                 <IconButton aria-label='your-lists' 
                 disabled={store.filterMode==="your_lists"}
-                onClick={handleViewYourLists}>
+                onClick={handleViewYourLists}
+                disabled = {auth.isGuest}>
                         <HomeOutlinedIcon 
                         className = {store.filterMode === "your_lists"? "filter-button-selected" : "filter-button"}
                         style={{ fontSize: '40pt' }} />

@@ -80,12 +80,12 @@ export default function AppBanner() {
 
     function getAccountMenu(loggedIn) {
         let userInitials = auth.getUserInitials();
-        if (loggedIn)
+        if (!loggedIn||auth.isGuest)
+            return <AccountCircle />;
+        else
             return <Fab id="user-circle" aria-label="add">
                 {userInitials}
             </Fab>;
-        else
-            return <AccountCircle />;
     }
     return (
         <Box sx={{ flexGrow: 1 }}>

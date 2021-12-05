@@ -15,7 +15,6 @@ export const GlobalStoreContext = createContext({});
 // THESE ARE ALL THE TYPES OF UPDATES TO OUR GLOBAL
 // DATA STORE STATE THAT CAN BE PROCESSED
 export const GlobalStoreActionType = {
-    CHANGE_LIST_NAME: "CHANGE_LIST_NAME",
     CLOSE_CURRENT_LIST: "CLOSE_CURRENT_LIST",
     CREATE_NEW_LIST: "CREATE_NEW_LIST",
     LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
@@ -25,13 +24,16 @@ export const GlobalStoreActionType = {
     SET_ITEM_EDIT_ACTIVE: "SET_ITEM_EDIT_ACTIVE",
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
     CHANGE_FILTER_MODE: "CHANGE_FILTER_MODE",
-    CHANGE_FILTER_TEXT: "CHANGE_FILTER_TEXT"
+    CHANGE_FILTER_TEXT: "CHANGE_FILTER_TEXT",
+    SET_SORT_MODE: "SET_SORT_MODE"
 }
 
 
 // WITH THIS WE'RE MAKING OUR GLOBAL DATA STORE
 // AVAILABLE TO THE REST OF THE APPLICATION
 function GlobalStoreContextProvider(props) {
+    // SINCE WE'VE WRAPPED THE STORE IN THE AUTH CONTEXT WE CAN ACCESS THE USER HERE
+    const { auth } = useContext(AuthContext);
     // THESE ARE ALL THE THINGS OUR DATA STORE WILL MANAGE
     let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const [store, setStore] = useState({
@@ -42,31 +44,17 @@ function GlobalStoreContextProvider(props) {
         itemActive: false,
         listMarkedForDeletion: null,
         filterMode: "your_lists",
-        filterText: ""
+        filterText: "",
+        sort: "newest",
     });
     const history = useHistory();
-
-    // SINCE WE'VE WRAPPED THE STORE IN THE AUTH CONTEXT WE CAN ACCESS THE USER HERE
-    const { auth } = useContext(AuthContext);
+    console.log("filtermode "+store.filterMode);//scrap
 
     // HERE'S THE DATA STORE'S REDUCER, IT MUST
     // HANDLE EVERY TYPE OF STATE CHANGE
     const storeReducer = (action) => {
         const { type, payload } = action;
         switch (type) {
-            // LIST UPDATE OF ITS NAME
-            case GlobalStoreActionType.CHANGE_LIST_NAME: {
-                return setStore({
-                    idNamePairs: payload.idNamePairs,
-                    currentList: payload.top5List,
-                    newListCounter: store.newListCounter,
-                    isListNameEditActive: false,
-                    isItemEditActive: false,
-                    listMarkedForDeletion: null,
-                    filterMode: store.filterMode,
-                    filterText: store.filterText
-                });
-            }
             // STOP EDITING THE CURRENT LIST
             case GlobalStoreActionType.CLOSE_CURRENT_LIST: {
                 return setStore({
@@ -77,8 +65,23 @@ function GlobalStoreContextProvider(props) {
                     isItemEditActive: false,
                     listMarkedForDeletion: null,
                     filterMode: "your_lists",
-                    filterText: store.filterText
+                    filterText: store.filterText,
+                    sort: store.sort
                 })
+            }
+            case GlobalStoreActionType.SET_SORT_MODE: {
+                console.log("setting sort method to " + payload.sort);
+                return setStore({
+                    idNamePairs: payload.pairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    isListNameEditActive: true,
+                    isItemEditActive: false,
+                    listMarkedForDeletion: null,
+                    filterMode: store.filterMode,
+                    sort: payload.sort,
+                    filterText: store.filterText,
+                });
             }
             // CREATE A NEW LIST
             case GlobalStoreActionType.CREATE_NEW_LIST: {
@@ -90,11 +93,34 @@ function GlobalStoreContextProvider(props) {
                     isItemEditActive: false,
                     listMarkedForDeletion: null,
                     filterMode: store.filterMode,
-                    filterText: store.filterText
+                    filterText: store.filterText,
+                    sort: store.sort
                 })
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
             case GlobalStoreActionType.LOAD_ID_NAME_PAIRS: {
+                switch (store.sort) {
+                    case "newest": {
+                        payload.sort(newestPublishComparator);
+                        break;
+                    }
+                    case "oldest": {
+                        payload.sort(oldestPublishComparator);
+                        break;
+                    }
+                    case "views": {
+                        payload.sort(viewsComparator);
+                        break;
+                    }
+                    case "likes": {
+                        payload.sort(likesComparator);
+                        break;
+                    }
+                    case "dislikes": {
+                        payload.sort(dislikesComparator);
+                        break;
+                    }
+                }
                 return setStore({
                     idNamePairs: payload,
                     currentList: null,
@@ -103,7 +129,8 @@ function GlobalStoreContextProvider(props) {
                     isItemEditActive: false,
                     listMarkedForDeletion: null,
                     filterMode: store.filterMode,
-                    filterText: store.filterText
+                    filterText: store.filterText,
+                    sort: store.sort
                 });
             }
             // PREPARE TO DELETE A LIST
@@ -116,7 +143,8 @@ function GlobalStoreContextProvider(props) {
                     isItemEditActive: false,
                     listMarkedForDeletion: payload,
                     filterMode: store.filterMode,
-                    filterText: store.filterText
+                    filterText: store.filterText,
+                    sort: store.sort
                 });
             }
             // PREPARE TO DELETE A LIST
@@ -129,7 +157,8 @@ function GlobalStoreContextProvider(props) {
                     isItemEditActive: false,
                     listMarkedForDeletion: null,
                     filterMode: store.filterMode,
-                    filterText: store.filterText
+                    filterText: store.filterText,
+                    sort: store.sort
                 });
             }
             // UPDATE A LIST
@@ -142,7 +171,8 @@ function GlobalStoreContextProvider(props) {
                     isItemEditActive: false,
                     listMarkedForDeletion: null,
                     filterMode: store.filterMode,
-                    filterText: store.filterText
+                    filterText: store.filterText,
+                    sort: store.sort
                 });
             }
             // START EDITING A LIST ITEM
@@ -155,7 +185,8 @@ function GlobalStoreContextProvider(props) {
                     isItemEditActive: true,
                     listMarkedForDeletion: null,
                     filterMode: store.filterMode,
-                    filterText: store.filterText
+                    filterText: store.filterText,
+                    sort: store.sort
                 });
             }
             // START EDITING A LIST NAME
@@ -168,7 +199,8 @@ function GlobalStoreContextProvider(props) {
                     isItemEditActive: false,
                     listMarkedForDeletion: null,
                     filterMode: store.filterMode,
-                    filterText: store.filterText
+                    filterText: store.filterText,
+                    sort: store.sort
                 });
             }
             case GlobalStoreActionType.CHANGE_FILTER_MODE: {
@@ -180,7 +212,8 @@ function GlobalStoreContextProvider(props) {
                     isItemEditActive: false,
                     listMarkedForDeletion: null,
                     filterMode: payload.filterMode,
-                    filterText: ""
+                    filterText: "",
+                    sort: store.sort
                 });
             }
             case GlobalStoreActionType.CHANGE_FILTER_TEXT: {
@@ -192,11 +225,21 @@ function GlobalStoreContextProvider(props) {
                     isItemEditActive: false,
                     listMarkedForDeletion: null,
                     filterMode: store.filterMode,
-                    filterText: payload.text
+                    filterText: payload.text,
+                    sort: store.sort
                 });
             }
             default:
                 return store;
+        }
+    }
+
+    store.incrementViews = async function (id) {
+        let response = await api.getTop5ListById(id);
+        if (response.status === 200) {
+            let top5List = response.data.top5List;
+            top5List.views += 1;
+            updateList(top5List);
         }
     }
 
@@ -231,7 +274,7 @@ function GlobalStoreContextProvider(props) {
         if (!listB.isPublished) {
             return -1;
         }
-        return listA.views - listB.views;
+        return listB.views - listA.views;
     }
 
     function likesComparator(listA, listB) {
@@ -257,41 +300,50 @@ function GlobalStoreContextProvider(props) {
     store.newestSort = function () {
         store.idNamePairs.sort(newestPublishComparator);
         storeReducer({
-            type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
-            payload: store.idNamePairs
+            type: GlobalStoreActionType.SET_SORT_MODE,
+            payload: {
+                sort: "newest",
+                pairs: store.idNamePairs}
         });
-
     }
 
     store.oldestSort = function () {
         store.idNamePairs.sort(oldestPublishComparator);
         storeReducer({
-            type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
-            payload: store.idNamePairs
+            type: GlobalStoreActionType.SET_SORT_MODE,
+            payload: {
+                sort: "oldest",
+                pairs: store.idNamePairs}
         });
     }
 
     store.viewsSort = function () {
         store.idNamePairs.sort(viewsComparator);
         storeReducer({
-            type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
-            payload: store.idNamePairs
+            type: GlobalStoreActionType.SET_SORT_MODE,
+            payload: {
+                sort: "views",
+                pairs: store.idNamePairs}
         });
     }
 
     store.likesSort = function () {
         store.idNamePairs.sort(likesComparator);
         storeReducer({
-            type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
-            payload: store.idNamePairs
+            type: GlobalStoreActionType.SET_SORT_MODE,
+            payload: {
+                sort: "likes",
+                pairs: store.idNamePairs}
         });
     }
 
     store.dislikesSort = function () {
         store.idNamePairs.sort(dislikesComparator);
         storeReducer({
-            type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
-            payload: store.idNamePairs
+            type: GlobalStoreActionType.SET_SORT_MODE,
+            payload: {
+                sort: "dislikes",
+                pairs: store.idNamePairs}
         });
     }
 
@@ -326,6 +378,23 @@ function GlobalStoreContextProvider(props) {
     }
 
     async function updateList(top5List) {
+        let response = await api.updateTop5ListByIdNoPerms(top5List._id, top5List);
+        if (response.status === 200) {
+            async function getListPairs() {
+                response = await api.getTop5ListPairs();
+                if (response.status === 200) {
+                    let pairsArray = response.data.idNamePairs;
+                    storeReducer({
+                        type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                        payload: pairsArray
+                    });
+                }
+            }
+            getListPairs();
+        }
+    }
+
+    async function updateListPerms(top5List) {
         let response = await api.updateTop5ListById(top5List._id, top5List);
         if (response.status === 200) {
             async function getListPairs() {
@@ -391,7 +460,7 @@ function GlobalStoreContextProvider(props) {
             ));
             console.log("newlist");
             console.log(newList);
-            updateList(newList);
+            updateListPerms(newList);
         }
     }
 
