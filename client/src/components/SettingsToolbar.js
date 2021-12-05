@@ -43,6 +43,30 @@ export default function Toolbar(){
     const handleMenuClose = () => {
         setAnchorEl(null);
     };
+    const handleNewestPublish = () =>{
+        handleMenuClose();
+        store.newestSort();
+    }
+
+    const handleOldestPublish = () =>{
+        handleMenuClose();
+        store.oldestSort();
+    }
+
+    const handleViewsSort = () =>{
+        handleMenuClose();
+        store.viewsSort();
+    }
+
+    const handleLikesSort = () =>{
+        handleMenuClose();
+        store.likesSort();
+    }
+
+    const handleDislikesSort = () =>{
+        handleMenuClose();
+        store.dislikesSort();
+    }
     const SortMenu = (
         <Menu
             anchorEl={anchorEl}
@@ -59,11 +83,11 @@ export default function Toolbar(){
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
-            <MenuItem onClick={handleMenuClose}>Publish Date (Newest)</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Publish Date (Oldest)</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Views</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Likes</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Dislikes</MenuItem>
+            <MenuItem onClick={handleNewestPublish}>Publish Date (Newest)</MenuItem>
+            <MenuItem onClick={handleOldestPublish}>Publish Date (Oldest)</MenuItem>
+            <MenuItem onClick={handleViewsSort}>Views</MenuItem>
+            <MenuItem onClick={handleLikesSort}>Likes</MenuItem>
+            <MenuItem onClick={handleDislikesSort}>Dislikes</MenuItem>
         </Menu>
     );
 
