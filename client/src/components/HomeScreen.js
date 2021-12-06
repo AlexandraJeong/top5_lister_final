@@ -3,6 +3,7 @@ import { GlobalStoreContext } from '../store'
 import ListCard from './ListCard.js'
 import SettingsToolbar from './SettingsToolbar.js'
 import MUIDeleteModal from './MUIDeleteModal'
+import AuthContext from '../auth';
 
 import List from '@mui/material/List';
 import { paginationClasses } from '@mui/material';
@@ -13,9 +14,14 @@ import { paginationClasses } from '@mui/material';
 */
 const HomeScreen = () => {
     const { store } = useContext(GlobalStoreContext);
+    const { auth } = useContext(AuthContext);
 
     useEffect(() => {
-        store.loadIdNamePairs();
+        if(!auth.isGuest){
+            store.loadIdNamePairs();
+        }else{
+            store.viewAllLists();
+        }
     }, []);
     let listCard = "";
     if (store) {

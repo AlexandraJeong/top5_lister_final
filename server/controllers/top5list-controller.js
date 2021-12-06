@@ -8,9 +8,8 @@ createTop5List = (req, res) => {
             errorMessage: 'Improperly formatted request',
         })
     }
-
     const top5List = new Top5List(body);
-    console.log("creating top5List: " + JSON.stringify(top5List));
+    console.log("creating top5List1: " + JSON.stringify(top5List));
     if (!top5List) {
         return res.status(400).json({
             errorMessage: 'Improperly formatted request',
@@ -40,6 +39,17 @@ createTop5List = (req, res) => {
             });
     })
 }
+
+deleteCommunityTop5List = async (req, res) => {
+    console.log("deleteTop5List: " + req.params.id);
+    await Top5List.findOneAndDelete({ _id: req.params.id }, () => {
+        return res.status(200).json({ success: true});
+    }).catch(err =>  {
+        console.log("error caught: " + err);
+        return res.status(400).json({ success: false })
+    })
+}
+
 deleteTop5List = async (req, res) => {
     console.log("delete Top 5 List with id: " + JSON.stringify(req.params.id));
     console.log("delete " + req.params.id);
@@ -83,9 +93,6 @@ getTop5ListById = async (req, res) => {
     }).catch(err => console.log(err))
 }
 getTop5ListPairs = async (req, res) => {
-    console.log("body");
-    console.log(req.body);
-    console.log("getTop5ListPairs");
     await User.findOne({ _id: req.userId }, (err, user) => {
         console.log("find user with id " + req.userId);
         async function asyncFindList(email) {
@@ -102,7 +109,6 @@ getTop5ListPairs = async (req, res) => {
                         .json({ success: false, error: 'Top 5 Lists not found' })
                 }
                 else {
-                    console.log("Send the Top5List pairs");
                     // PUT ALL THE LISTS INTO ID, NAME PAIRS
                     let pairs = [];
                     for (let key in top5Lists) {
@@ -119,7 +125,8 @@ getTop5ListPairs = async (req, res) => {
                             comments: list.comments,
                             isCommunity: list.isCommunity,
                             publishDate: list.publishDate,
-                            publishDateString: list.publishDateString
+                            publishDateString: list.publishDateString,
+                            communityItems: list.communityItems
                         };
                         pairs.push(pair);
                     }
@@ -150,6 +157,7 @@ getPublishedTop5ListPairs = async (req, res) => {
                             isPublished: list.isPublished,
                             comments: list.comments,
                             isCommunity: list.isCommunity,
+                            communityItems: list.communityItems,
                             publishDate: list.publishDate,
                             publishDateString: list.publishDateString
                 };
@@ -311,6 +319,7 @@ updateTop5List = async (req, res) => {
 module.exports = {
     createTop5List,
     deleteTop5List,
+    deleteCommunityTop5List,
     getTop5ListById,
     getTop5ListPairs,
     getTop5Lists,

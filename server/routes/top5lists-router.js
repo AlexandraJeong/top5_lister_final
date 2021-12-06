@@ -5,6 +5,7 @@ const Top5ListController = require('../controllers/top5list-controller')
 
 router.post('/top5list', auth.verify, Top5ListController.createTop5List)
 router.delete('/top5list/:id', auth.verify, Top5ListController.deleteTop5List)
+router.delete('/communitytop5list/:id', auth.verify, Top5ListController.deleteCommunityTop5List)
 router.get('/top5list/:id', auth.verify, Top5ListController.getTop5ListById)
 router.get('/top5listpairs', auth.verify, Top5ListController.getTop5ListPairs)
 router.get('/publishedtop5listpairs', auth.verify, Top5ListController.getPublishedTop5ListPairs)

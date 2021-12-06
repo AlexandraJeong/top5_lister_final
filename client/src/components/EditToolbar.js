@@ -31,7 +31,6 @@ function EditToolbar() {
     if (store.isListNameEditActive) {
         editStatus = true;
     }
-    console.log("canUndo: " + store.canUndo());   
     return (
         <div id="edit-toolbar">
             <Button 

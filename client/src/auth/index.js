@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { useContext,createContext, useEffect, useState } from "react";
 import { useHistory } from 'react-router-dom'
 import api from './auth-request-api'
 
@@ -21,7 +21,6 @@ function AuthContextProvider(props) {
         isGuest: false
     });
     const history = useHistory();
-
     useEffect(() => {
         auth.getLoggedIn();
     }, []);
@@ -87,8 +86,9 @@ function AuthContextProvider(props) {
     auth.toRegisterMenu = function(){
         history.push("/register");
     }
-    auth.registerUser = async function(firstName, lastName, email, password, passwordVerify) {
-        const response = await api.registerUser(firstName, lastName, email, password, passwordVerify);      
+    
+    auth.registerUser = async function(firstName, lastName, username, email, password, passwordVerify) {
+        const response = await api.registerUser(firstName, lastName, username, email, password, passwordVerify);      
         if (response.status === 200) {
             authReducer({
                 type: AuthActionType.REGISTER_USER,
@@ -107,7 +107,7 @@ function AuthContextProvider(props) {
             response = await api.loginUser("guest", "1234567890");
         }catch(err){
             console.log("creating guest acct");
-            response = await api.registerUser("first", "last", "guest", "1234567890", "1234567890");      
+            response = await api.registerUser("first", "last", "guest", "guest", "1234567890", "1234567890");      
             if (response.status === 200) {
                 console.log("logging guest in");
                 response = await api.loginUser("guest", "1234567890");
@@ -121,8 +121,10 @@ function AuthContextProvider(props) {
         });
     }
 
-    auth.loginUser = async function(email, password) {
-        const response = await api.loginUser(email, password);
+
+    auth.loginUser = async function(username, password) {
+        console.log("client username: "+username)
+        const response = await api.loginUser(username, password);
         if (response.status === 200) {
             authReducer({
                 type: AuthActionType.LOGIN_USER,

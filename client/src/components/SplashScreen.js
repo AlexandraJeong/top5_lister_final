@@ -1,9 +1,11 @@
 
 import { useContext, useState } from 'react';
 import AuthContext from '../auth';
+import { GlobalStoreContext } from '../store'
 
 export default function SplashScreen() {
     const { auth } = useContext(AuthContext);
+    const { store } = useContext(GlobalStoreContext);
 
     const handleLogin = () => {
         auth.toLoginMenu();

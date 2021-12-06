@@ -93,7 +93,6 @@ function ListCard(props) {
     //CREATING COMMENTS
     function handleKeyPress(event) {
         if (event.code === "Enter") {
-            console.log("key pressed");
             let comment = {
                 user: auth.user.email,
                 content: text
@@ -112,15 +111,22 @@ function ListCard(props) {
         <List className = "expanded-info" sx={{ width: '50%', left: '2.5%', bgcolor: '#2c2f70' }}>
             {
                 idNamePair.items.map((item, index) => (
+                    <Box>
+                    {idNamePair.isCommunity?
+                    <ListItem>
+                        <Typography fontSize="25px">
+                        {(index + 1)}. {idNamePair.communityItems[index].name}
+                        </Typography> 
+                        <Typography fontSize="15px">
+                        ({idNamePair.communityItems[index].votes} Votes)
+                        </Typography>
+                    </ListItem>:
                     <ListItem>
                         <Typography fontSize="25px">
                         {(index + 1)}. {item}
-                        </Typography>
-                        {idNamePair.isCommunity? 
-                        <Typography fontSize="15px">
-                        ({idNamePair.communityItems[index].votes} Votes)
-                        </Typography>:null}
-                    </ListItem>
+                        </Typography> 
+                    </ListItem>}
+                    </Box>
                 ))
             }
         </List>
