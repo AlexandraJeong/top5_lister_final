@@ -1,7 +1,8 @@
 import { useContext } from 'react';
 import AuthContext from '../auth'
 import Copyright from './Copyright'
-
+import Modal from '@mui/material/Modal';
+import Alert from '@mui/material/Alert';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -16,6 +17,11 @@ import Typography from '@mui/material/Typography';
 export default function RegisterScreen() {
     const { auth } = useContext(AuthContext);
 
+    function handleClick(event){
+        event.stopPropagation();
+        auth.closeModal();
+  
+    }
     const handleSubmit = (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
@@ -130,6 +136,19 @@ export default function RegisterScreen() {
                     </Box>
                 </Box>
                 <Copyright sx={{ mt: 5 }} />
+                <Modal
+        open={auth.isError}
+        >
+        <Box sx={{
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width:300}}>
+            <Alert severity="error">{auth.errorMessage}<Button class ="modal-button" onClick={handleClick}>X</Button></Alert>
+            
+        </Box>
+      </Modal>
             </Container>
     );
 }

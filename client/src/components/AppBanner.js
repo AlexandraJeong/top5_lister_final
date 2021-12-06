@@ -84,7 +84,7 @@ export default function AppBanner() {
         if (!loggedIn||auth.isGuest)
             return <AccountCircle />;
         else
-            return <Fab id="user-circle" aria-label="add">
+            return <Fab size= "small" id="user-circle" aria-label="add">
                 {userInitials}
             </Fab>;
     }

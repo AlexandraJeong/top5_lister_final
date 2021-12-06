@@ -80,10 +80,12 @@ function WorkspaceScreen() {
     }
     return (
         <Box id="top5-workspace" >
+            <div id="list-selector-heading">
             <SettingsToolbar className="disable-top5-toolbar" />
+            </div>
             <Box id="workspace-edit">
                 <Box
-                    sx={{ p: 3 }}>
+                    sx={{ p: 2 }}>
                         <TextField
                 margin="normal"
                 required
@@ -132,12 +134,12 @@ function WorkspaceScreen() {
                             }
                         </Grid>
                     </Box>
-
-                </Box>
-                <Button variant = "outlined" className = "workspace-button"
+                    <Button variant = "outlined" className = "workspace-button"
                 onClick = {handleSave}>Save</Button>
                 <Button disabled = {!canPublish()} variant = "outlined" className = "workspace-button"
                 onClick = {handlePublish}>Publish</Button>
+                </Box>
+                
             </Box>
         </Box>
     )

@@ -3,6 +3,8 @@ import AuthContext from '../auth'
 import Copyright from './Copyright'
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -16,6 +18,12 @@ import Typography from '@mui/material/Typography';
 
 export default function LoginScreen() {
     const { auth } = useContext(AuthContext);
+
+    function handleClick(event){
+        event.stopPropagation();
+        auth.closeModal();
+  
+    }
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -84,7 +92,7 @@ export default function LoginScreen() {
                     </Link>
                   </Grid>
                   <Grid item>
-                    <Link href="#" variant="body2">
+                    <Link href="/register/" variant="body2">
                       {"Don't have an account? Sign Up"}
                     </Link>
                   </Grid>
@@ -92,6 +100,19 @@ export default function LoginScreen() {
               </Box>
             </Box>
             <Copyright sx={{ mt: 8, mb: 4 }} />
+            <Modal
+        open={auth.isError}
+        >
+        <Box sx={{
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width:300}}>
+            <Alert severity="error">{auth.errorMessage}<Button class ="modal-button" onClick={handleClick}>X</Button></Alert>
+
+        </Box>
+      </Modal>
           </Container>
       );
 }

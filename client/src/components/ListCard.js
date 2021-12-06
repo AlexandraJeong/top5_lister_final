@@ -83,11 +83,11 @@ function ListCard(props) {
     //LIKE/DISLIKE HANDLERS
     function likeListHandler(event) {
         event.stopPropagation();
-        store.likeList(idNamePair._id);
+        store.likeList(idNamePair._id, doesUserLikeList());
     }
     function dislikeListHandler(event) {
         event.stopPropagation();
-        store.dislikeList(idNamePair._id);
+        store.dislikeList(idNamePair._id, doesUserDislikeList());
     }
 
     //CREATING COMMENTS
@@ -108,7 +108,7 @@ function ListCard(props) {
 
     let items =
     <Stack width = "100%" direction="row" spacing = {2}>
-        <List className = "expanded-info" sx={{ width: '50%', left: '2.5%', bgcolor: '#2c2f70' }}>
+        <List className = "expanded-info" sx={{ width: '45%', left: '2.5%', bgcolor: '#2c2f70' }}>
             {
                 idNamePair.items.map((item, index) => (
                     <Box>
@@ -122,7 +122,7 @@ function ListCard(props) {
                         </Typography>
                     </ListItem>:
                     <ListItem>
-                        <Typography fontSize="25px">
+                        <Typography fontSize="33px">
                         {(index + 1)}. {item}
                         </Typography> 
                     </ListItem>}
@@ -131,6 +131,7 @@ function ListCard(props) {
             }
         </List>
         {idNamePair.isPublished?<List className = "comment-box" sx={{ width: '50%', left: '2.5%', p: 0}}>
+            <Box sx={{ height: "300px", overflowY: "scroll"}}>
             {
                 idNamePair.comments.map((comment, index) => (
                     <ListItem className = "comments">
@@ -140,6 +141,7 @@ function ListCard(props) {
                     </ListItem>
                 ))
             }
+            </Box>
             {auth.isGuest? null: <TextField style = {{
                     backgroundColor: 'white',
                     width: "100%",
@@ -183,7 +185,7 @@ function ListCard(props) {
                 </Grid>
                 <Grid item xs={1}>
                     <IconButton aria-label='like'
-                        disabled={doesUserLikeList()||auth.isGuest}
+                        disabled={auth.isGuest||!idNamePair.isPublished}
                         onClick={likeListHandler}>
                         {doesUserLikeList() ? <ThumbUpIcon style={{ fontSize: '30pt' }} /> : <ThumbUpOutlinedIcon style={{ fontSize: '30pt' }} />}
                     </IconButton>
@@ -198,7 +200,7 @@ function ListCard(props) {
                 </Grid>
                 <Grid item xs={1}>
                     <IconButton aria-label='dislike'
-                        disabled={doesUserDislikeList()||auth.isGuest}
+                        disabled={auth.isGuest||!idNamePair.isPublished}
                         onClick={dislikeListHandler}>
                         {doesUserDislikeList() ? <ThumbDownIcon style={{ fontSize: '30pt' }} /> : <ThumbDownOutlinedIcon style={{ fontSize: '30pt' }} />}
                     </IconButton>

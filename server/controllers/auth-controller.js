@@ -31,15 +31,17 @@ getLoggedIn = async (req, res) => {
 }
 
 loginUser = async (req, res) => {
+    console.log("loginUser");
     try {
-        const { username, password } = req.body;
-        if (!username || !password) {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
             return res
                 .status(400)
                 .json({ errorMessage: "Please enter all required fields." });
         }
 
-        const existingUser = await User.findOne({ username: username });
+        const existingUser = await User.findOne({ email: email });
         console.log("existingUser: " + existingUser);
         if (!existingUser) {
             return res

@@ -110,7 +110,7 @@ export default function Toolbar(){
     }
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar id = "top5-toolbar" position="static">
+            <AppBar id = "top5-toolbar" elevation ={0} position="static">
             <Box sx={{ p: 1 }}>
                 <IconButton aria-label='your-lists' 
                 disabled={store.filterMode==="your_lists"}

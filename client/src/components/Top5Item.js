@@ -31,10 +31,10 @@ function Top5Item(props) {
             autoComplete="Top 5 List Item"
             onChange={handleUpdateText}
             defaultValue={props.text}
-            inputProps={{style: {fontSize: '35pt'}}}
-            InputLabelProps={{style: {fontSize: '35pt'}}}
+            inputProps={{style: {fontSize: '15pt'}}}
+            InputLabelProps={{style: {fontSize: '15pt'}}}
             style = {{
-                height: "100px"
+                height: "40px"
             }}
             />
     return (
